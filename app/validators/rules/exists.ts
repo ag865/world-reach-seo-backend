@@ -12,3 +12,5 @@ async function exists(value: any, options: Options, field: FieldContext) {
   if (!row) field.report('The {{ field }} doest not exist', 'unique', field)
 }
 export const existsRule = vine.createRule(exists)
+
+

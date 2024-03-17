@@ -1,7 +1,7 @@
 import InvalidCredentialsException from '#exceptions/Auth/InvalidCredentialsException'
 import InvalidUserTypeException from '#exceptions/Auth/InvalidUserTypeException'
+import { cuid } from '@adonisjs/core/helpers'
 import hash from '@adonisjs/core/services/hash'
-import { generateRandomToken } from '../Utils/helpers.js'
 import { UserServices } from './index.js'
 
 const loginUser = async (email: string, password: string, userType: 'Admin' | 'Client') => {
@@ -26,17 +26,7 @@ const updateResetPasswordKey = async (email: any, userType: 'Admin' | 'Client') 
   if (userType === 'Admin' && !user?.isAdmin) throw new InvalidUserTypeException()
   if (userType === 'Client' && user?.isAdmin) throw new InvalidUserTypeException()
 
-  let resetPasswordKey = ''
-  let haveUniqueKey = false
-
-  do {
-    resetPasswordKey = generateRandomToken()
-
-    const userWithKey = await UserServices.getUserByValue('resetPasswordKey', resetPasswordKey)
-    if (!userWithKey) haveUniqueKey = true
-  } while (!haveUniqueKey)
-
-  await UserServices.update({ resetPasswordKey }, 'id', user?.id)
+  await UserServices.update({ resetPasswordKey: cuid() }, 'id', user?.id)
 }
 
 const updatePassword = async (password: string, id: number) => {
