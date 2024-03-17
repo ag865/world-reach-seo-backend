@@ -1,5 +1,6 @@
 import CategoriesController from '#controllers/AdminControllers/CategoriesController'
 import MemberController from '#controllers/AdminControllers/MemberController'
+import SalesRepresentativesController from '#controllers/AdminControllers/SalesRepresentativesController'
 import UserController from '#controllers/AdminControllers/UserController'
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
@@ -18,6 +19,10 @@ router
       .prefix('user')
 
     router.resource('category', CategoriesController).apiOnly()
+    router
+      .resource('sales-representative', SalesRepresentativesController)
+      .apiOnly()
+      .only(['index', 'store'])
   })
   .prefix('/api/admin')
   .use([middleware.auth({ guards: ['api'] }), middleware.isAdmin()])

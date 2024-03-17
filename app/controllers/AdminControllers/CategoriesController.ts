@@ -1,5 +1,6 @@
 import NotFoundException from '#exceptions/NotFoundException'
-import Category from '#models/category'
+import Category from '#models/Category'
+
 import { categoryCreateValidator, categoryUpdateValidator } from '#validators/CategoryValidator'
 import string from '@adonisjs/core/helpers/string'
 import type { HttpContext } from '@adonisjs/core/http'
