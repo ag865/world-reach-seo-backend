@@ -1,5 +1,5 @@
+import ForbiddenAccessException from '#exceptions/Auth/ForbiddenAccessException'
 import InvalidCredentialsException from '#exceptions/Auth/InvalidCredentialsException'
-import InvalidUserTypeException from '#exceptions/Auth/InvalidUserTypeException'
 import { cuid } from '@adonisjs/core/helpers'
 import hash from '@adonisjs/core/services/hash'
 import { UserServices } from './index.js'
@@ -7,8 +7,8 @@ import { UserServices } from './index.js'
 const loginUser = async (email: string, password: string, userType: 'Admin' | 'Client') => {
   const user = await UserServices.getUserByValue('email', email)
   if (!user) throw new InvalidCredentialsException()
-  if (userType === 'Admin' && !user?.isAdmin) throw new InvalidUserTypeException()
-  if (userType === 'Client' && user?.isAdmin) throw new InvalidUserTypeException()
+  if (userType === 'Admin' && !user?.isAdmin) throw new ForbiddenAccessException()
+  if (userType === 'Client' && user?.isAdmin) throw new ForbiddenAccessException()
 
   const passwordMatched = await hash.verify(user.password, password)
   if (!passwordMatched) throw new InvalidCredentialsException('password')
@@ -23,8 +23,8 @@ const registerUser = async (data: any) => {
 const updateResetPasswordKey = async (email: any, userType: 'Admin' | 'Client') => {
   const user = await UserServices.getUserByValue('email', email)
 
-  if (userType === 'Admin' && !user?.isAdmin) throw new InvalidUserTypeException()
-  if (userType === 'Client' && user?.isAdmin) throw new InvalidUserTypeException()
+  if (userType === 'Admin' && !user?.isAdmin) throw new ForbiddenAccessException()
+  if (userType === 'Client' && user?.isAdmin) throw new ForbiddenAccessException()
 
   await UserServices.update({ resetPasswordKey: cuid() }, 'id', user?.id)
 }

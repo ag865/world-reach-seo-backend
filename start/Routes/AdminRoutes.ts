@@ -1,5 +1,7 @@
 import MemberController from '#controllers/AdminControllers/MemberController'
 import UserController from '#controllers/AdminControllers/UserController'
+import CategoriesController from '#controllers/CategoriesController'
+import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
 
 router
@@ -21,5 +23,8 @@ router
         router.delete('/:id', [UserController, 'destroy'])
       })
       .prefix('user')
+
+    router.resource('category', CategoriesController).apiOnly()
   })
   .prefix('/api/admin')
+  .use([middleware.auth({ guards: ['api'] }), middleware.isAdmin()])

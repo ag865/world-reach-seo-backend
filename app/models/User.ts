@@ -26,13 +26,13 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   declare avatar: string
 
-  @column()
+  @column({ serializeAs: null })
   declare resetPasswordKey: string
 
-  @column()
+  @column({ serializeAs: null })
   declare referralKey: string
 
-  @column()
+  @column({ serializeAs: null })
   declare password: string
 
   @column()

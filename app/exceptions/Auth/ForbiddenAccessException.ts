@@ -1,7 +1,7 @@
 import { Exception } from '@adonisjs/core/exceptions'
 import { HttpContext } from '@adonisjs/core/http'
 
-export default class InvalidUserTypeException extends Exception {
+export default class ForbiddenAccessException extends Exception {
   constructor(
     public field = 'email',
     message = 'You are not allowed to use this service.',
