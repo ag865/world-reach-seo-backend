@@ -1,5 +1,6 @@
 import CategoriesController from '#controllers/AdminControllers/CategoriesController'
 import MemberController from '#controllers/AdminControllers/MemberController'
+import PaymentApiSettingsController from '#controllers/AdminControllers/PaymentAPISettingController'
 import SalesRepresentativesController from '#controllers/AdminControllers/SalesRepresentativesController'
 import UserController from '#controllers/AdminControllers/UserController'
 import { middleware } from '#start/kernel'
@@ -21,6 +22,11 @@ router
     router.resource('category', CategoriesController).apiOnly()
     router
       .resource('sales-representative', SalesRepresentativesController)
+      .apiOnly()
+      .only(['index', 'store'])
+
+    router
+      .resource('payment-api-settings', PaymentApiSettingsController)
       .apiOnly()
       .only(['index', 'store'])
   })
