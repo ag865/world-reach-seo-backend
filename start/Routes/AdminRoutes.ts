@@ -1,19 +1,12 @@
+import CategoriesController from '#controllers/AdminControllers/CategoriesController'
 import MemberController from '#controllers/AdminControllers/MemberController'
 import UserController from '#controllers/AdminControllers/UserController'
-import CategoriesController from '#controllers/CategoriesController'
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
 
 router
   .group(() => {
-    router
-      .group(() => {
-        router.post('/', [MemberController, 'create'])
-        router.put('/:id', [MemberController, 'update'])
-        router.get('/', [MemberController, 'get'])
-        router.delete('/:id', [MemberController, 'destroy'])
-      })
-      .prefix('member')
+    router.resource('member', MemberController).apiOnly()
     router
       .group(() => {
         router.put('activate/:id', [UserController, 'activate'])

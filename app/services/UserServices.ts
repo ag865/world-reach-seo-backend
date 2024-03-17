@@ -27,7 +27,7 @@ const getUsers = async (
     .andWhere((query) => {
       query
         .whereRaw("LOWER(first_name || ' ' || last_name) LIKE ?", [`%${search.toLowerCase()}%`])
-        .orWhere('email', 'ILIKE', `%${search}%`)
+        .orWhereILike('email', `%${search}%`)
     })
     .orderBy('id', 'desc')
     .paginate(page, limit)

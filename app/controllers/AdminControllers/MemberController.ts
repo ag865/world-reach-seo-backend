@@ -7,7 +7,7 @@ import { HttpContext } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
 
 export default class MemberController {
-  async create({ request, response }: HttpContext) {
+  async store({ request, response }: HttpContext) {
     const data = await request.validateUsing(signupValidator)
 
     await AuthServices.registerUser({ ...data, referralKey: cuid(), isAdmin: true })
@@ -37,7 +37,7 @@ export default class MemberController {
     return response.json({ msg: 'Member updated successfully!' })
   }
 
-  async get({ response, request }: HttpContext) {
+  async index({ response, request }: HttpContext) {
     const { page, limit, search } = request.qs()
 
     const data = await UserServices.getUsers(page, limit, search)
