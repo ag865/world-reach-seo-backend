@@ -3,12 +3,15 @@ import MemberController from '#controllers/AdminControllers/MemberController'
 import PaymentApiSettingsController from '#controllers/AdminControllers/PaymentAPISettingController'
 import SalesRepresentativesController from '#controllers/AdminControllers/SalesRepresentativesController'
 import UserController from '#controllers/AdminControllers/UserController'
+import AuthController from '#controllers/AuthController'
 import ProfileController from '#controllers/ProfileController'
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
 
 router
   .group(() => {
+    router.post('auth/logout', [AuthController, 'logout'])
+
     router.put('profile/reset-password', [UserController, 'resetPassword'])
 
     router.resource('member', MemberController).apiOnly()

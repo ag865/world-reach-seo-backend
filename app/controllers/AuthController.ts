@@ -113,4 +113,16 @@ export default class AuthController {
 
     return response.json({ user, token })
   }
+
+  async logout({ response, auth }: HttpContext) {
+    const userId = auth.user?.id
+
+    if (!userId) throw new NotFoundException('userId', 'User not found')
+
+    const user = await UserServices.getUserByValue('id', userId)
+
+    await User.accessTokens.delete(user!, userId)
+
+    return response.json({ msg: 'Successfully logged out' })
+  }
 }
