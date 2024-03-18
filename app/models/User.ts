@@ -29,7 +29,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column({ serializeAs: null })
   declare resetPasswordKey: string
 
-  @column({ serializeAs: null })
+  @column()
   declare referralKey: string
 
   @column({ serializeAs: null })

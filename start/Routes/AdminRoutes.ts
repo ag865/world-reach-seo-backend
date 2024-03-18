@@ -3,12 +3,16 @@ import MemberController from '#controllers/AdminControllers/MemberController'
 import PaymentApiSettingsController from '#controllers/AdminControllers/PaymentAPISettingController'
 import SalesRepresentativesController from '#controllers/AdminControllers/SalesRepresentativesController'
 import UserController from '#controllers/AdminControllers/UserController'
+import ProfilesController from '#controllers/ProfileController'
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
 
 router
   .group(() => {
+    router.put('profile/reset-password', [UserController, 'resetPassword'])
+
     router.resource('member', MemberController).apiOnly()
+
     router
       .group(() => {
         router.put('activate/:id', [UserController, 'activate'])
@@ -20,6 +24,7 @@ router
       .prefix('user')
 
     router.resource('category', CategoriesController).apiOnly()
+
     router
       .resource('sales-representative', SalesRepresentativesController)
       .apiOnly()
@@ -29,6 +34,8 @@ router
       .resource('payment-api-settings', PaymentApiSettingsController)
       .apiOnly()
       .only(['index', 'store'])
+
+    router.resource('profile', ProfilesController).apiOnly().only(['index', 'store'])
   })
   .prefix('/api/admin')
   .use([middleware.auth({ guards: ['api'] }), middleware.isAdmin()])

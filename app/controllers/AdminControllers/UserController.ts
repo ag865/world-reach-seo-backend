@@ -1,9 +1,11 @@
+import InvalidCredentialsException from '#exceptions/Auth/InvalidCredentialsException'
 import NotFoundException from '#exceptions/NotFoundException'
 import { UserServices } from '#services/index'
-import { updateUserValidator } from '#validators/MembersValidators'
+import { updatePasswordValidator, updateUserValidator } from '#validators/MembersValidators'
 import { cuid } from '@adonisjs/core/helpers'
 import { HttpContext } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
+import hash from '@adonisjs/core/services/hash'
 
 export default class UserController {
   async update({ request, response, params }: HttpContext) {
@@ -70,5 +72,23 @@ export default class UserController {
     await UserServices.destroy(id)
 
     return response.json({ msg: 'Member deleted successfully' })
+  }
+
+  async resetPassword({ response, request, auth }: HttpContext) {
+    const userId = auth.user?.id
+
+    const data = await request.validateUsing(updatePasswordValidator)
+
+    const user = await UserServices.getUserByValue('id', userId)
+    if (!user) throw new NotFoundException('id', 'User not found')
+
+    const passwordMatched = await hash.verify(user.password, data.currentPassword)
+    if (!passwordMatched) throw new InvalidCredentialsException('password')
+
+    const hashedPassword = await hash.make(data.password)
+
+    await UserServices.update({ password: hashedPassword }, 'id', user.id)
+
+    return response.json({ msg: 'Password updated successfully!' })
   }
 }

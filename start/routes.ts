@@ -8,3 +8,4 @@
 */
 import './Routes/AdminRoutes.js'
 import './Routes/AuthRoutes.js'
+import './Routes/ClientRoutes.js'
