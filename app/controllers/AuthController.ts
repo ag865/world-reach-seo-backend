@@ -58,6 +58,16 @@ export default class AuthController {
     return response.json({ msg: 'Member signed up successfully' })
   }
 
+  async getUserDetailsByReferralKey({ response, params }: HttpContext) {
+    const { key } = params
+
+    const user = await UserServices.getUserByValue('referralKey', key)
+
+    if (!user || !user.isAdmin) throw new NotFoundException('key', 'Member not found')
+
+    return response.json(user)
+  }
+
   async clientResetPassword({ request, response }: HttpContext) {
     const data = await request.validateUsing(resetPasswordValidator)
 

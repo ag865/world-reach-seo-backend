@@ -35,6 +35,7 @@ export const updatePasswordValidator = vine.compile(
       .trim()
       .minLength(8)
       .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&].*$/),
+    confirmPassword: vine.string().trim().sameAs('password'),
   })
 )
 updatePasswordValidator.messagesProvider = new SimpleMessagesProvider({
@@ -42,6 +43,8 @@ updatePasswordValidator.messagesProvider = new SimpleMessagesProvider({
   'password.minLength': 'Password must be 8 characters long',
   'password.regex':
     'Password must contain at least one upper case letter, one lower case letter, one number and one special character',
+  'confirmPassword.required': 'Confirm password is required',
+  'confirmPassword.sameAs': 'Confirm password must be same as password',
 })
 
 export const signupValidator = vine.compile(

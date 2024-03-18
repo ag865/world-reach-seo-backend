@@ -11,6 +11,11 @@ export default class IsClientMiddleware {
     if (ctx.auth.user?.isAdmin) {
       throw new ForbiddenAccessException()
     }
+
+    if (!ctx.auth.user?.isActive) {
+      throw new ForbiddenAccessException('email', 'Account is not active')
+    }
+
     /**
      * Call next method in the pipeline and return its output
      */

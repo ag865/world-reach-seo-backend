@@ -3,7 +3,7 @@ import MemberController from '#controllers/AdminControllers/MemberController'
 import PaymentApiSettingsController from '#controllers/AdminControllers/PaymentAPISettingController'
 import SalesRepresentativesController from '#controllers/AdminControllers/SalesRepresentativesController'
 import UserController from '#controllers/AdminControllers/UserController'
-import ProfilesController from '#controllers/ProfileController'
+import ProfileController from '#controllers/ProfileController'
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
 
@@ -35,7 +35,7 @@ router
       .apiOnly()
       .only(['index', 'store'])
 
-    router.resource('profile', ProfilesController).apiOnly().only(['index', 'store'])
+    router.resource('profile', ProfileController).apiOnly().only(['index', 'store'])
   })
   .prefix('/api/admin')
   .use([middleware.auth({ guards: ['api'] }), middleware.isAdmin()])
