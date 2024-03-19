@@ -8,6 +8,7 @@ import app from '@adonisjs/core/services/app'
 export default class ProfileController {
   async index({ auth, response }: HttpContext) {
     const userId = auth.user?.id
+
     const user = await UserServices.getUserByValue('id', userId)
 
     if (!user || !user.isAdmin) throw new NotFoundException('key', 'Profile not found')
