@@ -10,12 +10,12 @@ export default class CategoriesController {
    * Get a list of resource
    */
   async index({ request, response }: HttpContext) {
-    const { page = 1, limit = 10, search = '' } = request.qs()
+    const { page = 1, limit = 10, search = '', sort = 'name', order = 'desc' } = request.qs()
 
     const data = await Category.query()
       .whereILike('name', `%${search}%`)
       .orWhereILike('slug', `%${search}%`)
-      .orderBy('name', 'asc')
+      .orderBy(sort, order)
       .paginate(page, limit)
 
     return response.json(data)

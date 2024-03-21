@@ -1,5 +1,5 @@
 import vine, { SimpleMessagesProvider } from '@vinejs/vine'
-import { uniqueWhenUpdateRule } from './rules/unique.js'
+import { uniqueRule, uniqueWhenUpdateRule } from './rules/unique.js'
 export const updateMemberValidator = (id: number) =>
   vine.compile(
     vine.object({
@@ -19,6 +19,31 @@ export const updateMemberValidator = (id: number) =>
   )
 
 updateMemberValidator.messagesProvider = new SimpleMessagesProvider({
+  'firstName.required': 'First name is required',
+  'lastName.required': 'Last name is required',
+  'email.required': 'Email is required',
+  'email.email': 'Invalid email address',
+  'avatar.file.extname': 'Please upload an image file',
+})
+
+export const createMemberValidator = vine.compile(
+  vine.object({
+    firstName: vine.string().trim(),
+    lastName: vine.string().trim(),
+    email: vine
+      .string()
+      .trim()
+      .email()
+      .use(uniqueRule({ table: 'users', column: 'email' })),
+    avatar: vine
+      .file({
+        extnames: ['jpg', 'png', 'jpeg', 'webp'],
+      })
+      .optional(),
+  })
+)
+
+createMemberValidator.messagesProvider = new SimpleMessagesProvider({
   'firstName.required': 'First name is required',
   'lastName.required': 'Last name is required',
   'email.required': 'Email is required',

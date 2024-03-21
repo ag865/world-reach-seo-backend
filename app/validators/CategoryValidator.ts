@@ -12,6 +12,7 @@ export const categoryCreateValidator = vine.compile(
 
 categoryCreateValidator.messagesProvider = new SimpleMessagesProvider({
   'name.required': 'Category name is required',
+  'name.unique': 'Category name already exists',
 })
 
 export const categoryUpdateValidator = (id: number) =>
@@ -26,4 +27,5 @@ export const categoryUpdateValidator = (id: number) =>
 
 categoryUpdateValidator.messagesProvider = new SimpleMessagesProvider({
   'name.required': 'Category name is required',
+  'name.unique': 'Category name already exists',
 })

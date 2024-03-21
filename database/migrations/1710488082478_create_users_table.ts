@@ -12,7 +12,7 @@ export default class extends BaseSchema {
       table.string('avatar').nullable()
       table.string('reset_password_key').nullable()
       table.string('referral_key').nullable()
-      table.string('password').notNullable()
+      table.string('password').nullable()
       table.boolean('is_admin').defaultTo(false)
       table.boolean('is_active').defaultTo(false)
 

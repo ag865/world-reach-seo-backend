@@ -18,7 +18,7 @@ export default class AuthController {
 
     const user = await AuthServices.loginUser(data.email, data.password, 'Client')
 
-    if (!user.isActive) throw new NotFoundException('email', 'Account is not active')
+    if (!user.isActive) throw new NotFoundException('email', 'Your account is not active')
 
     const token = await User.accessTokens.create(user)
 
@@ -55,7 +55,9 @@ export default class AuthController {
       user.id
     )
 
-    return response.json({ msg: 'Member signed up successfully' })
+    return response.json({
+      msg: 'Member signed up successfully, you can now login using your credentials!',
+    })
   }
 
   async getUserDetailsByReferralKey({ response, params }: HttpContext) {
