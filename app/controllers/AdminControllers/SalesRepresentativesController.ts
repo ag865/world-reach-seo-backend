@@ -10,7 +10,7 @@ export default class SalesRepresentativesController {
    */
   async index({ response }: HttpContext) {
     const data = await SalesRepresentative.first()
-    return response.json(data)
+    return response.json(data ?? { firstName: '', lastName: '', email: '' })
   }
 
   /**

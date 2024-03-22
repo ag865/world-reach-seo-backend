@@ -17,7 +17,14 @@ export default class PaymentApiSettingsController {
    */
   async index({ response }: HttpContext) {
     const data = await PaymentApiSetting.first()
-    return response.json(data)
+    return response.json(
+      data ?? {
+        paypalId: '',
+        paypalSecret: '',
+        stripeKey: '',
+        stripeSecret: '',
+      }
+    )
   }
 
   /**

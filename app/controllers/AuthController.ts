@@ -18,7 +18,7 @@ export default class AuthController {
 
     const user = await AuthServices.loginUser(data.email, data.password, 'Client')
 
-    if (!user.isActive) throw new NotFoundException('email', 'Your account is not active')
+    if (!user.isActive) throw new NotFoundException('email', 'Your account is not approved yet')
 
     const token = await User.accessTokens.create(user)
 
@@ -30,7 +30,9 @@ export default class AuthController {
 
     await AuthServices.registerUser({ ...data, isActive: false })
 
-    return response.json({ msg: 'User signed up successfully' })
+    return response.json({
+      msg: 'Account created successfully, please wait for approval from our side.',
+    })
   }
 
   async adminReferralSignup({ request, response, params }: HttpContext) {

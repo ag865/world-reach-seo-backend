@@ -11,7 +11,7 @@ export default class ProfileController {
 
     const user = await UserServices.getUserByValue('id', userId)
 
-    if (!user || !user.isAdmin) throw new NotFoundException('key', 'Profile not found')
+    if (!user || user.isAdmin) throw new NotFoundException('key', 'Profile not found')
 
     return response.json(user)
   }
@@ -21,7 +21,7 @@ export default class ProfileController {
 
     const user = await UserServices.getUserByValue('id', userId)
 
-    if (!user || !user.isAdmin) throw new NotFoundException('id', 'Profile not found')
+    if (!user || user.isAdmin) throw new NotFoundException('id', 'Profile not found')
 
     let { avatar, ...requestData } = await request.validateUsing(updateMemberValidator(userId!))
 
