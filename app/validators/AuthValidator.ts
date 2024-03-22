@@ -34,7 +34,7 @@ export const updatePasswordValidator = vine.compile(
       .string()
       .trim()
       .minLength(8)
-      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&].*$/),
+      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/),
     confirmPassword: vine.string().trim().sameAs('password'),
   })
 )
@@ -60,7 +60,7 @@ export const signupValidator = vine.compile(
       .string()
       .trim()
       .minLength(8)
-      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&].*$/),
+      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/),
   })
 )
 
@@ -90,7 +90,7 @@ export const referralSignupValidator = (id: number) =>
         .string()
         .trim()
         .minLength(8)
-        .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&].*$/),
+        .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/),
     })
   )
 

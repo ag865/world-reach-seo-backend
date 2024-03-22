@@ -26,7 +26,7 @@ const updateResetPasswordKey = async (email: any, userType: 'Admin' | 'Client') 
   if (userType === 'Admin' && !user?.isAdmin) throw new ForbiddenAccessException()
   if (userType === 'Client' && user?.isAdmin) throw new ForbiddenAccessException()
 
-  await UserServices.update({ resetPasswordKey: cuid() }, 'id', user?.id)
+  await UserServices.update({ resetPasswordKey: cuid(), isActive: false }, 'id', user?.id)
 }
 
 const updatePassword = async (password: string, id: number) => {
