@@ -38,7 +38,7 @@ export default class AuthController {
 
     const user = await UserServices.getUserByValue('referralKey', key)
 
-    if (!user || !user.isAdmin) throw new NotFoundException('key', 'Member not found')
+    if (!user || !user.isAdmin) throw new NotFoundException('key', 'Invalid referral key!')
 
     const data = await request.validateUsing(referralSignupValidator(user.id))
 
@@ -65,7 +65,7 @@ export default class AuthController {
 
     const user = await UserServices.getUserByValue('referralKey', key)
 
-    if (!user || !user.isAdmin) throw new NotFoundException('key', 'Member not found')
+    if (!user || !user.isAdmin) throw new NotFoundException('key', 'Invalid Referral Key!')
 
     return response.json(user)
   }
@@ -83,13 +83,17 @@ export default class AuthController {
 
     const user = await UserServices.getUserByValue('resetPasswordKey', key)
 
-    if (!user) throw new NotFoundException('resetPasswordKey', 'User not found')
+    if (!user) throw new NotFoundException('resetPasswordKey', 'Invalid recovery key!')
 
     const data = await request.validateUsing(updatePasswordValidator)
 
     const hashedPassword = await hash.make(data.password)
 
-    await UserServices.update({ password: hashedPassword, resetPasswordKey: '' }, 'id', user.id)
+    await UserServices.update(
+      { password: hashedPassword, resetPasswordKey: '', isActive: true },
+      'id',
+      user.id
+    )
 
     return response.json({
       msg: 'Your account password has been reset now you can login using your new credentials!',
