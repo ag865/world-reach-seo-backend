@@ -1,5 +1,7 @@
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { BaseModel, column, manyToMany } from '@adonisjs/lucid/orm'
+import * as Relations from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
+import Website from './Website.js'
 
 export default class Category extends BaseModel {
   @column({ isPrimary: true })
@@ -10,6 +12,16 @@ export default class Category extends BaseModel {
 
   @column()
   declare slug: string
+
+  @manyToMany(() => Website, {
+    localKey: 'id',
+    relatedKey: 'id',
+    pivotForeignKey: 'category_id',
+    pivotRelatedForeignKey: 'website_id',
+    pivotTable: 'website_category',
+    pivotTimestamps: false,
+  })
+  declare websites: Relations.ManyToMany<typeof Website>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

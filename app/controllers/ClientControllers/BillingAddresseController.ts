@@ -23,7 +23,7 @@ export default class BillingAddressesController {
 
   async store({ request, response, auth }: HttpContext) {
     const userId = auth.user?.id
-    const data = await request.validateUsing(billingAddressValidator)
+    const data = await request.validateUsing(billingAddressValidator) 
 
     const billingAddress = await BillingAddress.query().where('user_id', userId!).first()
     console.log(data)

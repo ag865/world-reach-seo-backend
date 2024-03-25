@@ -3,6 +3,8 @@ import MemberController from '#controllers/AdminControllers/MemberController'
 import PaymentApiSettingsController from '#controllers/AdminControllers/PaymentAPISettingController'
 import SalesRepresentativesController from '#controllers/AdminControllers/SalesRepresentativesController'
 import UserController from '#controllers/AdminControllers/UserController'
+import WebsitesController from '#controllers/AdminControllers/WebsiteController'
+import WebsiteMultipleUploadsController from '#controllers/AdminControllers/WebsiteMultipleUploadController'
 import AuthController from '#controllers/AuthController'
 import ProfileController from '#controllers/ProfileController'
 import { middleware } from '#start/kernel'
@@ -39,6 +41,13 @@ router
       .only(['index', 'store'])
 
     router.resource('profile', ProfileController).apiOnly().only(['index', 'store'])
+
+    router
+      .resource('website', WebsitesController)
+      .apiOnly()
+      .only(['index', 'store', 'update', 'destroy'])
+
+    router.post('/website/multiple', [WebsiteMultipleUploadsController])
   })
   .prefix('/api/admin')
   .use([middleware.auth({ guards: ['api'] }), middleware.isAdmin()])
