@@ -41,6 +41,18 @@ export default class Website extends BaseModel {
   declare homepageLinkPrice: number
 
   @column()
+  declare bazoomPrice: number
+
+  @column()
+  declare bazoomPriceGambling: number
+
+  @column()
+  declare bazoomPriceErotic: number
+
+  @column()
+  declare bazoomPriceCrypto: number
+
+  @column()
   declare mozDA: number
 
   @column()
@@ -60,6 +72,9 @@ export default class Website extends BaseModel {
 
   @column()
   declare referringDomain: number
+
+  @column()
+  declare domainAge: number
 
   @column()
   declare websiteEmail: string

@@ -24,7 +24,7 @@ export default class SalesRepresentativesController {
     let data: any = requestData
 
     if (avatar) {
-      const fileName = `${cuid()}.${avatar.extname}`
+      const fileName = `${cuid()}.${avatar.clientName}`
       await avatar.move(app.makePath('uploads'), { name: fileName })
       data = { ...data, avatar: fileName }
     }
