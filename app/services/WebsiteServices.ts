@@ -1,6 +1,7 @@
 import Category from '#models/Category'
 import Website from '#models/Website'
 import string from '@adonisjs/core/helpers/string'
+import { HttpContext } from '@adonisjs/core/http'
 
 const addWebsites = async (data: any[]) => {
   const websites: any[] = []
@@ -213,4 +214,89 @@ const updateWebsites = async (websites: any[], existingWebsites: Website[]) => {
   }
 }
 
-export { addWebsites }
+const getWebsites = async (ctx: HttpContext) => {
+  const {
+    page = 1,
+    limit = 10,
+    sort = 'desc',
+    order = 'id',
+    language = '',
+    country = '',
+    category = '',
+    niche = '',
+    mozDaMin = 0,
+    mozDaMax,
+    spamScoreMin = 0,
+    spamScoreMax,
+    aHrefsDrMin = 0,
+    aHrefsDrMax,
+    priceMin = 0,
+    priceMax,
+    organicTrafficMin = 0,
+    organicTrafficMax,
+    semurshMin = 0,
+    semurshMax,
+    referringDomainsMin = 0,
+    referringDomainsMax,
+    homePageLink = false,
+  } = ctx.request.qs()
+
+  const query = Website.query().preload('categories')
+
+  if (category) {
+    query.whereHas('categories', (query) => {
+      query.wherePivot('category_id', 'in', category)
+    })
+  }
+
+  if (language) {
+    const languages = typeof language === 'string' ? [language] : language
+    query.andWhere('language', 'in', languages)
+  }
+
+  if (country) {
+    const countries = typeof language === 'string' ? [country] : country
+    query.andWhere('country', 'in', countries)
+  }
+
+  if (niche) {
+    const niches = typeof niche === 'string' ? [niche] : niche
+    if (niches.includes('casino')) query.andWhere('sellingCasinoPrice', '>', 0)
+    if (niches.includes('crypto')) query.andWhere('sellingCryptoPrice', '>', 0)
+    if (niches.includes('erotic')) query.andWhere('sellingEroticPrice', '>', 0)
+  }
+
+  if (mozDaMin) query.andWhere('moz_da', '>=', mozDaMin)
+
+  if (mozDaMax) query.andWhere('moz_da', '<=', mozDaMax)
+
+  if (spamScoreMin) query.andWhere('spam_score', '>=', spamScoreMin)
+
+  if (spamScoreMax) query.andWhere('spam_score', '<=', spamScoreMax)
+
+  if (aHrefsDrMin) query.andWhere('a_hrefs_dr', '>=', aHrefsDrMin)
+
+  if (aHrefsDrMax) query.andWhere('a_hrefs_dr', '<=', aHrefsDrMax)
+
+  if (organicTrafficMin) query.andWhere('organic_traffic', '>=', organicTrafficMin)
+
+  if (organicTrafficMax) query.andWhere('organic_traffic', '<=', organicTrafficMax)
+
+  if (semurshMin) query.andWhere('semursh', '>=', semurshMin)
+
+  if (semurshMax) query.andWhere('semursh', '<=', semurshMax)
+
+  if (referringDomainsMin) query.andWhere('referring_domain', '>=', referringDomainsMin)
+
+  if (referringDomainsMax) query.andWhere('referring_domain', '<=', referringDomainsMax)
+
+  if (priceMin) query.andWhere('selling_general_price', '>=', priceMin)
+
+  if (priceMax) query.andWhere('selling_general_price', '<=', priceMax)
+
+  if (homePageLink) query.andWhere('home_page_link', homePageLink)
+
+  return await query.orderBy(sort, order).paginate(page, limit)
+}
+
+export { addWebsites, getWebsites }

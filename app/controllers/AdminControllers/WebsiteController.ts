@@ -1,5 +1,6 @@
 import NotFoundException from '#exceptions/NotFoundException'
 import Website from '#models/Website'
+import { getWebsites } from '#services/WebsiteServices'
 import { createWebsiteValidator, updateWebsiteValidator } from '#validators/WebsiteValidator'
 import type { HttpContext } from '@adonisjs/core/http'
 
@@ -7,22 +8,9 @@ export default class WebsitesController {
   /**
    * Display a list of resource
    */
-  async index({ request, response }: HttpContext) {
-    const {
-      page = 1,
-      limit = 10,
-      search = '',
-      sortOrder = 'desc',
-      sortColumn = 'id',
-    } = request.qs()
-
-    const data = await Website.query()
-      .where('domain', 'Ilike', `%${search}%`)
-      .preload('categories')
-      .orderBy(sortColumn, sortOrder)
-      .paginate(page, limit)
-
-    return response.json(data)
+  async index(ctx: HttpContext) {
+    const data = await getWebsites(ctx)
+    return ctx.response.json(data)
   }
 
   async store({ request, response }: HttpContext) {

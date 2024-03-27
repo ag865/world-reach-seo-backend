@@ -20,7 +20,9 @@ const getUsers = async (
   page: number = 1,
   limit: number = 10,
   search: string = '',
-  isAdmin: boolean = true
+  isAdmin: boolean = true,
+  sort = 'id',
+  order: 'asc' | 'desc' = 'desc'
 ) => {
   return await User.query()
     .where('isAdmin', isAdmin)
@@ -29,7 +31,7 @@ const getUsers = async (
         .whereRaw("LOWER(first_name || ' ' || last_name) LIKE ?", [`%${search.toLowerCase()}%`])
         .orWhereILike('email', `%${search}%`)
     })
-    .orderBy('id', 'desc')
+    .orderBy(sort, order)
     .paginate(page, limit)
 }
 
