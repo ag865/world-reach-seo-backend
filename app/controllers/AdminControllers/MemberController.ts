@@ -47,7 +47,7 @@ export default class MemberController {
   async index({ response, request }: HttpContext) {
     const { page, limit, search, sort = 'id', order = 'desc' } = request.qs()
 
-    const data = await UserServices.getUsers(page, limit, search, sort, order)
+    const data = await UserServices.getUsers(page, limit, search, true, sort, order)
 
     return response.json(data)
   }
