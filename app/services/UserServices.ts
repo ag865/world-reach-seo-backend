@@ -20,17 +20,25 @@ const getUsers = async (
   page: number = 1,
   limit: number = 10,
   search: string = '',
-  isAdmin: boolean = true
+  isAdmin: boolean = true,
+  sort: string = 'id',
+  order: 'asc' | 'desc' = 'desc'
 ) => {
-  return await User.query()
+  const query = User.query()
     .where('isAdmin', isAdmin)
     .andWhere((query) => {
       query
         .whereRaw("LOWER(first_name || ' ' || last_name) LIKE ?", [`%${search.toLowerCase()}%`])
         .orWhereILike('email', `%${search}%`)
     })
-    .orderBy('id', 'desc')
-    .paginate(page, limit)
+
+  const sortColumns = sort.split(',')
+
+  sortColumns.map((sortColumn) => {
+    query.orderBy(sortColumn, order)
+  })
+
+  return await query.paginate(page, limit)
 }
 
 export { create, destroy, getUserByValue, getUsers, update }

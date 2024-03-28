@@ -57,8 +57,10 @@
     "@adonisjs/mail": "^9.2.0",
     "@vinejs/vine": "^1.8.0",
     "luxon": "^3.4.4",
+    "moment": "^2.30.1",
     "pg": "^8.11.3",
-    "reflect-metadata": "^0.2.1"
+    "reflect-metadata": "^0.2.1",
+    "xlsx": "^0.18.5"
   },
   "eslintConfig": {
     "extends": "@adonisjs/eslint-config/app"

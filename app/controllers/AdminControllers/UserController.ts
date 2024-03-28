@@ -20,7 +20,7 @@ export default class UserController {
     let data: any = requestData
 
     if (avatar) {
-      const fileName = `${cuid()}.${avatar.extname}`
+      const fileName = `${cuid()}.${avatar.clientName}`
       await avatar.move(app.makePath('uploads'), { name: fileName })
       data = { ...data, avatar: fileName }
     }
@@ -55,9 +55,9 @@ export default class UserController {
   }
 
   async get({ response, request }: HttpContext) {
-    const { page, limit, search } = request.qs()
+    const { page, limit, search, sort = 'id', order = 'desc' } = request.qs()
 
-    const data = await UserServices.getUsers(page, limit, search, false)
+    const data: any = await UserServices.getUsers(page, limit, search, false, sort, order)
 
     return response.json(data)
   }

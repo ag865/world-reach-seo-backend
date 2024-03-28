@@ -11,7 +11,7 @@ export default class ProfileController {
 
     const user = await UserServices.getUserByValue('id', userId)
 
-    if (!user || !user.isAdmin) throw new NotFoundException('key', 'Profile not found')
+    if (!user) throw new NotFoundException('key', 'Profile not found')
 
     return response.json(user)
   }
@@ -21,14 +21,14 @@ export default class ProfileController {
 
     const user = await UserServices.getUserByValue('id', userId)
 
-    if (!user || !user.isAdmin) throw new NotFoundException('id', 'Profile not found')
+    if (!user) throw new NotFoundException('id', 'Profile not found')
 
     let { avatar, ...requestData } = await request.validateUsing(updateMemberValidator(userId!))
 
     let data: any = requestData
 
     if (avatar) {
-      const fileName = `${cuid()}.${avatar.extname}`
+      const fileName = `${cuid()}.${avatar.clientName}`
       await avatar.move(app.makePath('uploads'), { name: fileName })
       data = { ...data, avatar: fileName }
     }

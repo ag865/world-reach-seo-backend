@@ -7,13 +7,12 @@ import app from '@adonisjs/core/services/app'
 
 export default class MemberController {
   async store({ request, response }: HttpContext) {
-   let { avatar, ...requestData } = await request.validateUsing(createMemberValidator)
-
+    let { avatar, ...requestData } = await request.validateUsing(createMemberValidator)
 
     let data: any = requestData
 
     if (avatar) {
-      const fileName = `${cuid()}.${avatar.extname}`
+      const fileName = `${cuid()}.${avatar.clientName}`
       await avatar.move(app.makePath('uploads'), { name: fileName })
       data = { ...data, avatar: fileName }
     }
@@ -35,7 +34,7 @@ export default class MemberController {
     let data: any = requestData
 
     if (avatar) {
-      const fileName = `${cuid()}.${avatar.extname}`
+      const fileName = `${cuid()}.${avatar.clientName}`
       await avatar.move(app.makePath('uploads'), { name: fileName })
       data = { ...data, avatar: fileName }
     }
@@ -46,9 +45,9 @@ export default class MemberController {
   }
 
   async index({ response, request }: HttpContext) {
-    const { page, limit, search } = request.qs()
+    const { page, limit, search, sort = 'id', order = 'desc' } = request.qs()
 
-    const data = await UserServices.getUsers(page, limit, search)
+    const data = await UserServices.getUsers(page, limit, search, true, sort, order)
 
     return response.json(data)
   }

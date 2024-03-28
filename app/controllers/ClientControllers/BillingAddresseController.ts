@@ -7,15 +7,26 @@ export default class BillingAddressesController {
     const userId = auth.user?.id
 
     const data = await BillingAddress.query().where('user_id', userId!).first()
-    return response.json(data ?? {})
+    return response.json(
+      data ?? {
+        firstName: '',
+        lastName: '',
+        businessName: '',
+        email: '',
+        address: '',
+        postalCode: '',
+        city: '',
+        country: '',
+      }
+    )
   }
 
   async store({ request, response, auth }: HttpContext) {
     const userId = auth.user?.id
-    const data = await request.validateUsing(billingAddressValidator)
+    const data = await request.validateUsing(billingAddressValidator) 
 
     const billingAddress = await BillingAddress.query().where('user_id', userId!).first()
-
+    console.log(data)
     if (billingAddress) {
       await BillingAddress.query().where('id', billingAddress.id).update(data)
     } else {
