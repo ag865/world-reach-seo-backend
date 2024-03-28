@@ -8,9 +8,10 @@ export default class WebsitesController {
   /**
    * Display a list of resource
    */
-  async index(ctx: HttpContext) {
-    const data = await getWebsites(ctx)
-    return ctx.response.json(data)
+  async index({ request, response }: HttpContext) {
+    const params = request.qs()
+    const data = await getWebsites(params, true)
+    return response.json(data)
   }
 
   async store({ request, response }: HttpContext) {
@@ -31,13 +32,11 @@ export default class WebsitesController {
     if (!website) throw new NotFoundException()
 
     const { categories, ...data } = await request.validateUsing(updateWebsiteValidator(id))
-
     await Website.query()
       .update({ ...data })
       .where('id', id)
 
     if (categories) await website!.related('categories').sync(categories)
-
     return response.json({ msg: 'Website updated successfully' })
   }
 

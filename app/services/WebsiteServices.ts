@@ -1,7 +1,6 @@
 import Category from '#models/Category'
 import Website from '#models/Website'
 import string from '@adonisjs/core/helpers/string'
-import { HttpContext } from '@adonisjs/core/http'
 
 const addWebsites = async (data: any[]) => {
   const websites: any[] = []
@@ -214,12 +213,12 @@ const updateWebsites = async (websites: any[], existingWebsites: Website[]) => {
   }
 }
 
-const getWebsites = async (ctx: HttpContext) => {
+const getWebsites = async (params: any, paginate = true) => {
   const {
     page = 1,
     limit = 10,
-    sort = 'desc',
-    order = 'id',
+    sort = 'id',
+    order = 'desc',
     language = '',
     country = '',
     category = '',
@@ -239,24 +238,27 @@ const getWebsites = async (ctx: HttpContext) => {
     referringDomainsMin = 0,
     referringDomainsMax,
     homePageLink = false,
-  } = ctx.request.qs()
-
+    ids = [],
+  } = params
   const query = Website.query().preload('categories')
 
+  if (ids && ids.length) query.where('id', 'IN', ids)
+
   if (category) {
+    const categories = typeof category === 'string' ? [category] : category
     query.whereHas('categories', (query) => {
-      query.wherePivot('category_id', 'in', category)
+      query.whereInPivot('category_id', categories)
     })
   }
 
   if (language) {
     const languages = typeof language === 'string' ? [language] : language
-    query.andWhere('language', 'in', languages)
+    query.andWhereIn('language', languages)
   }
 
   if (country) {
-    const countries = typeof language === 'string' ? [country] : country
-    query.andWhere('country', 'in', countries)
+    const countries = typeof country === 'string' ? [country] : country
+    query.andWhereIn('country', countries)
   }
 
   if (niche) {
@@ -296,7 +298,9 @@ const getWebsites = async (ctx: HttpContext) => {
 
   if (homePageLink) query.andWhere('home_page_link', homePageLink)
 
-  return await query.orderBy(sort, order).paginate(page, limit)
+  if (paginate) return await query.orderBy(sort, order).paginate(page, limit)
+
+  return await query.orderBy(sort, order)
 }
 
 export { addWebsites, getWebsites }

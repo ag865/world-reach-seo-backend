@@ -20,6 +20,13 @@ const createWebsiteValidator = vine.compile(
     oldPrice: vine.number().optional(),
     homepageLinkPrice: vine.number().optional(),
 
+    bazoomPrice: vine.number().optional(),
+    bazoomPriceGambling: vine.number().optional(),
+    bazoomPriceErotic: vine.number().optional(),
+    bazoomPriceCrypto: vine.number().optional(),
+
+    domainAge: vine.number().optional(),
+
     mozDA: vine.number().optional(),
     aHrefsDR: vine.number().optional(),
     organicTraffic: vine.number().optional(),
@@ -73,6 +80,13 @@ const updateWebsiteValidator = (id: number) =>
       sellingCryptoPrice: vine.number().optional(),
       oldPrice: vine.number().optional(),
       homepageLinkPrice: vine.number().optional(),
+
+      bazoomPrice: vine.number().optional(),
+      bazoomPriceGambling: vine.number().optional(),
+      bazoomPriceErotic: vine.number().optional(),
+      bazoomPriceCrypto: vine.number().optional(),
+
+      domainAge: vine.number().optional(),
 
       mozDA: vine.number().optional(),
       aHrefsDR: vine.number().optional(),
