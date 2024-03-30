@@ -25,6 +25,7 @@ const getUsers = async (
   order: 'asc' | 'desc' = 'desc'
 ) => {
   const query = User.query()
+    .preload('countries')
     .where('isAdmin', isAdmin)
     .andWhere((query) => {
       query

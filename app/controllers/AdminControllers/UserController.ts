@@ -1,5 +1,6 @@
 import InvalidCredentialsException from '#exceptions/Auth/InvalidCredentialsException'
 import NotFoundException from '#exceptions/NotFoundException'
+import UserCountry from '#models/UserCountry'
 import { UserServices } from '#services/index'
 import { updatePasswordValidator, updateUserValidator } from '#validators/MembersValidators'
 import { cuid } from '@adonisjs/core/helpers'
@@ -11,7 +12,7 @@ export default class UserController {
   async update({ request, response, params }: HttpContext) {
     const id = params.id as number
 
-    let { avatar, ...requestData } = await request.validateUsing(updateUserValidator)
+    let { avatar, countries, ...requestData } = await request.validateUsing(updateUserValidator)
 
     const user = await UserServices.getUserByValue('id', id)
 
@@ -26,6 +27,15 @@ export default class UserController {
     }
 
     await UserServices.update(data, 'id', id)
+
+    await UserCountry.query().where('userId', id).delete()
+
+    if (countries) {
+      const countriesToUpdate = countries?.map((country) => ({
+        country,
+      }))
+      await user.related('countries').createMany(countriesToUpdate)
+    }
 
     return response.json({ msg: 'User updated successfully!' })
   }
