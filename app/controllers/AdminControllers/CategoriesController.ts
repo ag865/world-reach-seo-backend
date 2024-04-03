@@ -6,9 +6,6 @@ import string from '@adonisjs/core/helpers/string'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class CategoriesController {
-  /**
-   * Get a list of resource
-   */
   async index({ request, response }: HttpContext) {
     const { page = 1, limit = 10, search = '', sort = 'name', order = 'desc' } = request.qs()
 
@@ -21,9 +18,6 @@ export default class CategoriesController {
     return response.json(data)
   }
 
-  /**
-   * Handle for the create resource
-   */
   async store({ response, request }: HttpContext) {
     const data = await request.validateUsing(categoryCreateValidator)
 
@@ -34,9 +28,6 @@ export default class CategoriesController {
     })
   }
 
-  /**
-   * Get individual record
-   */
   async show({ params, response }: HttpContext) {
     const { id } = params
 
@@ -46,9 +37,7 @@ export default class CategoriesController {
 
     return response.json(category)
   }
-  /**
-   * Handle form submission for the edit action
-   */
+
   async update({ response, params, request }: HttpContext) {
     const { id } = params
 
@@ -68,9 +57,6 @@ export default class CategoriesController {
     })
   }
 
-  /**
-   * Delete record
-   */
   async destroy({ params, response }: HttpContext) {
     const { id } = params
 

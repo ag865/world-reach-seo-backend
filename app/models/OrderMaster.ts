@@ -29,6 +29,30 @@ export default class OrderMaster extends BaseModel {
   @column()
   declare totalAmount: number
 
+  @column()
+  declare billingAddressFirstName: string
+
+  @column()
+  declare billingAddressLastName: string
+
+  @column()
+  declare billingAddressBusinessName: string
+
+  @column()
+  declare billingAddressEmail: string
+
+  @column()
+  declare billingAddressAddress: string
+
+  @column()
+  declare billingAddressCity: string
+
+  @column()
+  declare billingAddressPostalCode: string
+
+  @column()
+  declare billingAddressCountry: string
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
