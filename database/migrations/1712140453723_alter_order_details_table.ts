@@ -24,7 +24,7 @@ export default class extends BaseSchema {
       table.string('custom_id').nullable()
       table.string('restricted_niche')
       table.integer('words').nullable()
-      table.boolean('content_by_marektplace')
+      table.boolean('content_by_marketplace')
 
       table.double('total_price')
       table.double('content_price')
