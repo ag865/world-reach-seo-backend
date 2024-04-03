@@ -1,6 +1,10 @@
 import UserController from '#controllers/AdminControllers/UserController'
 import AuthController from '#controllers/AuthController'
-import BillingAddressesController from '#controllers/ClientControllers/BillingAddresseController'
+import BillingAddressController from '#controllers/ClientControllers/BillingAddressController'
+import CartsController from '#controllers/ClientControllers/CartController'
+import CategoryController from '#controllers/ClientControllers/CategoryController'
+import SalesRepresentativesController from '#controllers/ClientControllers/SalesRepresentativeController'
+import WebsitesController from '#controllers/ClientControllers/WebsiteController'
 import ProfileController from '#controllers/ProfileController'
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
@@ -17,10 +21,20 @@ router
 
     router.post('/auth/logout', [AuthController, 'logout'])
 
+    router.resource('billing-address', BillingAddressController).apiOnly().only(['index', 'store'])
+
     router
-      .resource('billing-address', BillingAddressesController)
-      .apiOnly()
-      .only(['index', 'store'])
+      .group(() => {
+        router.get('/', [WebsitesController, 'get'])
+        router.get('/count', [WebsitesController, 'getCount'])
+      })
+      .prefix('website')
+
+    router.get('sales-representative', [SalesRepresentativesController])
+
+    router.get('/category', [CategoryController])
+
+    router.resource('/cart', CartsController).apiOnly().only(['index', 'store'])
   })
   .prefix('/api/user')
   .use([middleware.auth({ guards: ['api'] }), middleware.isClient()])

@@ -1,7 +1,7 @@
 import User from '#models/User'
 
 const getUserByValue = async (column: string, value: any) => {
-  return await User.findBy(column, value)
+  return await User.query().where(column, value).preload('countries').first()
 }
 
 const create = async (data: any) => {

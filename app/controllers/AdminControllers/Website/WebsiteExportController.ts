@@ -57,7 +57,7 @@ export default class WebsiteExportController {
   async handle({ request, response }: HttpContext) {
     const params = request.qs()
 
-    let data = await getWebsites(params, false)
+    let data = (await getWebsites(params, false, false)) as Website[]
 
     const csvData: string[][] = []
 

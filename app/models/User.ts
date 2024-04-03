@@ -6,6 +6,7 @@ import { BaseModel, column, hasMany, hasOne } from '@adonisjs/lucid/orm'
 import type { HasMany, HasOne } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
 import BillingAddress from './BillingAddress.js'
+import UserCart from './UserCart.js'
 import UserCountry from './UserCountry.js'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
@@ -55,6 +56,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @hasMany(() => UserCountry)
   declare countries: HasMany<typeof UserCountry>
+
+  @hasOne(() => UserCart)
+  declare cart: HasOne<typeof UserCart>
 
   static accessTokens = DbAccessTokensProvider.forModel(User)
 }
