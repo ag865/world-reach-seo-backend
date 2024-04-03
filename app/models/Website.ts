@@ -1,7 +1,8 @@
-import { BaseModel, column, manyToMany } from '@adonisjs/lucid/orm'
+import { BaseModel, column, hasMany, manyToMany } from '@adonisjs/lucid/orm'
 import * as Relations from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
 import Category from './Category.js'
+import OrderDetail from './OrderDetail.js'
 
 export default class Website extends BaseModel {
   @column({ isPrimary: true })
@@ -124,6 +125,9 @@ export default class Website extends BaseModel {
     pivotTimestamps: false,
   })
   declare categories: Relations.ManyToMany<typeof Category>
+
+  @hasMany(() => OrderDetail)
+  declare orderDetails: Relations.HasMany<typeof OrderDetail>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
