@@ -10,7 +10,7 @@ export default class OrdersController {
 
     let { status = '', search = '', limit = 10, page = 1, order = 'desc', sort = 'id' } = params
 
-    if (search) search = `%${search}%`
+    if (search) search = `${search}%`
 
     const userId = auth.user?.id
 
@@ -36,7 +36,7 @@ export default class OrdersController {
   async show({ params, response }: HttpContext) {
     const { id } = params
 
-    const data = await OrderServices.getById(id)
+    const data = await OrderServices.getByValue('orderNumber', id)
 
     return response.json(data)
   }

@@ -12,8 +12,9 @@ const get = async (
 ) => {
   const query = OrderMaster.query()
     .preload('user')
-    .withCount('details')
-    .as('detailsCount')
+    .preload('details', (query) => {
+      query.preload('website')
+    })
     .withCount('details', (query) => {
       query.where('status', 'live').as('liveLinks')
     })
@@ -27,17 +28,17 @@ const get = async (
   return await query.orderBy(sort, order).paginate(page, limit)
 }
 
-const getById = async (id: number) => {
+const getByValue = async (column: string, value: any) => {
   return await OrderMaster.query()
-    .where('id', id)
+    .where(column, value)
     .withCount('details')
     .as('detailsCount')
     .withCount('details', (query) => {
-      query.where('status', 'live').as('liveLinks')
+      query.where('status', 'Live Link').as('liveLinks')
     })
     .preload('user')
     .preload('details', (details) => {
-      details.preload('website')
+      details.preload('website').orderBy('id', 'desc')
     })
     .first()
 }
@@ -56,4 +57,4 @@ const checkOrderNumber = async (orderNumber: string) => {
   return await OrderMaster.query().where('orderNumber', orderNumber).first()
 }
 
-export { get, getById, getOrderNumber }
+export { get, getByValue, getOrderNumber }
