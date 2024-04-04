@@ -2,10 +2,13 @@ import { withAuthFinder } from '@adonisjs/auth'
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
 import { compose } from '@adonisjs/core/helpers'
 import hash from '@adonisjs/core/services/hash'
-import { BaseModel, column, hasOne } from '@adonisjs/lucid/orm'
-import type { HasOne } from '@adonisjs/lucid/types/relations'
+import { BaseModel, column, hasMany, hasOne } from '@adonisjs/lucid/orm'
+import type { HasMany, HasOne } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
 import BillingAddress from './BillingAddress.js'
+import OrderMaster from './OrderMaster.js'
+import UserCart from './UserCart.js'
+import UserCountry from './UserCountry.js'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -51,6 +54,15 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @hasOne(() => BillingAddress)
   declare billingAddress: HasOne<typeof BillingAddress>
+
+  @hasMany(() => UserCountry)
+  declare countries: HasMany<typeof UserCountry>
+
+  @hasOne(() => UserCart)
+  declare cart: HasOne<typeof UserCart>
+
+  @hasMany(() => OrderMaster)
+  declare orders: HasMany<typeof OrderMaster>
 
   static accessTokens = DbAccessTokensProvider.forModel(User)
 }

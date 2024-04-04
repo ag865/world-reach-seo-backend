@@ -5,17 +5,11 @@ import type { HttpContext } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
 
 export default class SalesRepresentativesController {
-  /**
-   * Get a list of resource
-   */
   async index({ response }: HttpContext) {
     const data = await SalesRepresentative.first()
     return response.json(data ?? { firstName: '', lastName: '', email: '' })
   }
 
-  /**
-   * Handle for the create resource
-   */
   async store({ response, request }: HttpContext) {
     const { avatar, ...requestData } = await request.validateUsing(SalesRepresentativeValidator)
 

@@ -213,7 +213,7 @@ const updateWebsites = async (websites: any[], existingWebsites: Website[]) => {
   }
 }
 
-const getWebsites = async (params: any, paginate = true) => {
+const getWebsites = async (params: any, paginate = true, getCount = false) => {
   const {
     page = 1,
     limit = 10,
@@ -239,8 +239,14 @@ const getWebsites = async (params: any, paginate = true) => {
     referringDomainsMax,
     homePageLink = false,
     ids = [],
+    search = '',
   } = params
-  const query = Website.query().preload('categories')
+
+  const query = Website.query()
+
+  if (!getCount) query.preload('categories')
+
+  if (search) query.andWhereILike('domain', `%${search}%`)
 
   if (ids && ids.length) query.where('id', 'IN', ids)
 
@@ -263,9 +269,9 @@ const getWebsites = async (params: any, paginate = true) => {
 
   if (niche) {
     const niches = typeof niche === 'string' ? [niche] : niche
-    if (niches.includes('casino')) query.andWhere('sellingCasinoPrice', '>', 0)
-    if (niches.includes('crypto')) query.andWhere('sellingCryptoPrice', '>', 0)
-    if (niches.includes('erotic')) query.andWhere('sellingEroticPrice', '>', 0)
+    if (niches.includes('Casino')) query.andWhere('sellingCasinoPrice', '>', 0)
+    if (niches.includes('Crypto')) query.andWhere('sellingCryptoPrice', '>', 0)
+    if (niches.includes('Erotic')) query.andWhere('sellingEroticPrice', '>', 0)
   }
 
   if (mozDaMin) query.andWhere('moz_da', '>=', mozDaMin)
@@ -296,7 +302,10 @@ const getWebsites = async (params: any, paginate = true) => {
 
   if (priceMax) query.andWhere('selling_general_price', '<=', priceMax)
 
-  if (homePageLink) query.andWhere('home_page_link', homePageLink)
+  if (homePageLink && homePageLink !== 'None')
+    query.andWhere('home_page_link', homePageLink.toLowerCase())
+
+  if (getCount) return await query.count('id')
 
   if (paginate) return await query.orderBy(sort, order).paginate(page, limit)
 

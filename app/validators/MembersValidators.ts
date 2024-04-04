@@ -60,6 +60,7 @@ export const updateUserValidator = vine.compile(
         extnames: ['jpg', 'png', 'jpeg', 'webp'],
       })
       .optional(),
+    countries: vine.array(vine.string()).optional(),
   })
 )
 

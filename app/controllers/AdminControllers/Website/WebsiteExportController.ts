@@ -55,9 +55,9 @@ const csvHeaders = [
 
 export default class WebsiteExportController {
   async handle({ request, response }: HttpContext) {
-    let { ids } = await request.validateUsing(validator)
+    const params = request.qs()
 
-    let data = await getWebsites({ ids }, false)
+    let data = (await getWebsites(params, false, false)) as Website[]
 
     const csvData: string[][] = []
 

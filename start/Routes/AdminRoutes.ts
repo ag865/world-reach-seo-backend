@@ -51,7 +51,7 @@ router
 
     router.post('/website/import', [WebsiteMultipleUploadsController])
     router.post('/website/delete-multiple', [WebsiteMultipleDeleteController])
-    router.post('/website/export', [WebsiteExportController])
+    router.get('/website/export', [WebsiteExportController])
   })
   .prefix('/api/admin')
   .use([middleware.auth({ guards: ['api'] }), middleware.isAdmin()])

@@ -10,7 +10,7 @@ export default class WebsitesController {
    */
   async index({ request, response }: HttpContext) {
     const params = request.qs()
-    const data = await getWebsites(params, true)
+    const data = await getWebsites(params, true, false)
     return response.json(data)
   }
 
