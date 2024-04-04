@@ -29,7 +29,7 @@ export default class extends BaseSchema {
       table.double('total_price')
       table.double('content_price')
       table.double('media_price')
-      table.double('status')
+      table.string('status')
 
       table.date('publication_date').nullable()
       table.date('live_date').nullable()

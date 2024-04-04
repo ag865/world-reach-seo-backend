@@ -3,6 +3,7 @@ import AuthController from '#controllers/AuthController'
 import BillingAddressController from '#controllers/ClientControllers/BillingAddressController'
 import CartsController from '#controllers/ClientControllers/CartController'
 import CategoryController from '#controllers/ClientControllers/CategoryController'
+import OrdersController from '#controllers/ClientControllers/OrdersController'
 import SalesRepresentativesController from '#controllers/ClientControllers/SalesRepresentativeController'
 import WebsitesController from '#controllers/ClientControllers/WebsiteController'
 import ProfileController from '#controllers/ProfileController'
@@ -35,6 +36,8 @@ router
     router.get('/category', [CategoryController])
 
     router.resource('/cart', CartsController).apiOnly().only(['index', 'store'])
+
+    router.resource('/order', OrdersController).apiOnly().except(['destroy'])
   })
   .prefix('/api/user')
   .use([middleware.auth({ guards: ['api'] }), middleware.isClient()])

@@ -62,6 +62,8 @@ export default class OrderMaster extends BaseModel {
   @belongsTo(() => User)
   declare user: Relations.BelongsTo<typeof User>
 
-  @hasMany(() => OrderDetail)
+  @hasMany(() => OrderDetail, { foreignKey: 'orderId' })
   declare details: Relations.HasMany<typeof OrderDetail>
+
+  serializeExtras = true
 }

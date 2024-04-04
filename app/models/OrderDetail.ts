@@ -35,11 +35,6 @@ export default class OrderDetail extends BaseModel {
   @column()
   declare mediaPrice: number
 
-
-
-
-
-  
   @column()
   declare status: string
 

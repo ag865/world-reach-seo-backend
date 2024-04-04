@@ -24,6 +24,15 @@ export default class extends BaseSchema {
 
       table.double('total_amount')
 
+      table.string('billing_address_first_name')
+      table.string('billing_address_last_name')
+      table.string('billing_address_business_name')
+      table.string('billing_address_email')
+      table.string('billing_address_address')
+      table.string('billing_address_city')
+      table.string('billing_address_postal_code')
+      table.string('billing_address_country')
+
       table.timestamp('created_at')
       table.timestamp('updated_at')
     })

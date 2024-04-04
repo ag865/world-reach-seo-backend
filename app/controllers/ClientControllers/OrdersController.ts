@@ -19,11 +19,14 @@ export default class OrdersController {
     return response.json(data)
   }
 
-  async store({ request, response }: HttpContext) {
+  async store({ request, response, auth }: HttpContext) {
+    const userId = auth.user?.id
+
     const { details, ...data } = await request.validateUsing(createOrderValidator)
+
     const orderNumber = await OrderServices.getOrderNumber()
 
-    const order = await OrderMaster.create({ ...data, status: 'Pending', orderNumber })
+    const order = await OrderMaster.create({ ...data, userId, status: 'Pending', orderNumber })
 
     await order.related('details').createMany(details)
 
@@ -44,7 +47,7 @@ export default class OrdersController {
     const { id } = params
 
     await OrderDetail.query()
-      .where(id)
+      .where('id', id)
       .update({ ...data })
 
     return response.json({ msg: 'Order updated successfully' })
