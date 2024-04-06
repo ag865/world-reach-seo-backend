@@ -1,5 +1,6 @@
 import InvalidCredentialsException from '#exceptions/Auth/InvalidCredentialsException'
 import NotFoundException from '#exceptions/NotFoundException'
+import User from '#models/User'
 import UserCountry from '#models/UserCountry'
 import { UserServices } from '#services/index'
 import { updatePasswordValidator, updateUserValidator } from '#validators/MembersValidators'
@@ -68,6 +69,14 @@ export default class UserController {
     const { page, limit, search, sort = 'id', order = 'desc' } = request.qs()
 
     const data: any = await UserServices.getUsers(page, limit, search, false, sort, order)
+
+    return response.json(data)
+  }
+
+  async getUser({ response, params }: HttpContext) {
+    const { id } = params
+
+    const data = await User.query().where('id', id).andWhere('isAdmin', false).firstOrFail()
 
     return response.json(data)
   }

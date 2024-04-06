@@ -28,6 +28,7 @@ router
         router.put('de-activate/:id', [UserController, 'deActivate'])
         router.put('/:id', [UserController, 'update'])
         router.get('/', [UserController, 'get'])
+        router.get('/:id', [UserController, 'getUser'])
         router.delete('/:id', [UserController, 'destroy'])
       })
       .prefix('user')
@@ -52,7 +53,9 @@ router
       .only(['index', 'store', 'update', 'destroy'])
 
     router.post('/website/import', [WebsiteMultipleUploadsController])
+
     router.post('/website/delete-multiple', [WebsiteMultipleDeleteController])
+
     router.get('/website/export', [WebsiteExportController])
 
     router.resource('/admin-order', OrdersController).apiOnly().except(['destroy'])
