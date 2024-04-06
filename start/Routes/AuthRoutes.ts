@@ -9,6 +9,8 @@ router
 
     router.post('reset-password', [AuthController, 'clientResetPassword'])
 
+    router.put('verify/:id', [AuthController, 'verifyAccount'])
+
     router.put('update-password/:key', [AuthController, 'updatePassword'])
   })
   .prefix('/api/user/auth')

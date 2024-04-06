@@ -46,6 +46,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   declare isActive: boolean
 
+  @column()
+  declare isVerified: boolean
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
