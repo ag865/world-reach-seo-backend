@@ -4,12 +4,17 @@ import { cuid } from '@adonisjs/core/helpers'
 import hash from '@adonisjs/core/services/hash'
 import { UserServices } from './index.js'
 
-const loginUser = async (email: string, password: string, userType: 'Admin' | 'Client') => {
+const loginUser = async (
+  email: string,
+  password: string,
+  userType: 'Admin' | 'Client',
+  checkVerification?: boolean
+) => {
   const user = await UserServices.getUserByValue('email', email)
   if (!user) throw new InvalidCredentialsException()
   if (userType === 'Admin' && !user?.isAdmin) throw new ForbiddenAccessException()
   if (userType === 'Client' && user?.isAdmin) throw new ForbiddenAccessException()
-  if (!user?.isVerified)
+  if (checkVerification && !user?.isVerified)
     throw new ForbiddenAccessException('email', 'Please verify your email address')
 
   const passwordMatched = await hash.verify(user.password, password)

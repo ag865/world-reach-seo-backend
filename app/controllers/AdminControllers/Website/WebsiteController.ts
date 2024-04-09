@@ -10,7 +10,9 @@ export default class WebsitesController {
    */
   async index({ request, response }: HttpContext) {
     const params = request.qs()
+
     const data = await getWebsites(params, true, false)
+
     return response.json(data)
   }
 
@@ -32,11 +34,13 @@ export default class WebsitesController {
     if (!website) throw new NotFoundException()
 
     const { categories, ...data } = await request.validateUsing(updateWebsiteValidator(id))
+
     await Website.query()
       .update({ ...data })
       .where('id', id)
 
     if (categories) await website!.related('categories').sync(categories)
+
     return response.json({ msg: 'Website updated successfully' })
   }
 

@@ -17,4 +17,3 @@ import './Routes/ClientRoutes.js'
 
 router.get('/api/image/:key', [ImageController, 'download'])
 
-router.on('/').render('emails/recover_password_email_html')

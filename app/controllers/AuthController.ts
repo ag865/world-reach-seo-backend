@@ -19,7 +19,7 @@ export default class AuthController {
   async clientLogin({ request, response }: HttpContext) {
     const data = await request.validateUsing(loginValidator)
 
-    const user = await AuthServices.loginUser(data.email, data.password, 'Client')
+    const user = await AuthServices.loginUser(data.email, data.password, 'Client', true)
 
     if (!user.isActive) throw new NotFoundException('email', 'Your account is not approved yet')
 
