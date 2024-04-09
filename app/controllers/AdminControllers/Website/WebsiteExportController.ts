@@ -2,14 +2,7 @@ import Category from '#models/Category'
 import Website from '#models/Website'
 import { getWebsites } from '#services/WebsiteServices'
 import { HttpContext } from '@adonisjs/core/http'
-import vine from '@vinejs/vine'
 import moment from 'moment'
-
-const validator = vine.compile(
-  vine.object({
-    ids: vine.array(vine.number()).optional(),
-  })
-)
 
 const csvHeaders = [
   'Paid general price',

@@ -11,7 +11,9 @@ export default class WebsitesController {
     if (!country) {
       const user = await UserServices.getUserByValue('id', auth.user!.id!)
 
-      const countries = user?.countries.map((country) => country.country)
+      let countries: string[] | undefined = undefined
+
+      if (user?.countries.length) countries = user?.countries.map((country) => country.country)
 
       params = { ...params, country: countries }
     }

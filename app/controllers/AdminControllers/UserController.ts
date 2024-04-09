@@ -1,12 +1,15 @@
 import InvalidCredentialsException from '#exceptions/Auth/InvalidCredentialsException'
 import NotFoundException from '#exceptions/NotFoundException'
+import User from '#models/User'
 import UserCountry from '#models/UserCountry'
 import { UserServices } from '#services/index'
+import env from '#start/env'
 import { updatePasswordValidator, updateUserValidator } from '#validators/MembersValidators'
 import { cuid } from '@adonisjs/core/helpers'
 import { HttpContext } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
 import hash from '@adonisjs/core/services/hash'
+import mail from '@adonisjs/mail/services/main'
 
 export default class UserController {
   async update({ request, response, params }: HttpContext) {
@@ -49,6 +52,18 @@ export default class UserController {
 
     await UserServices.update({ isActive: true }, 'id', id)
 
+    await mail.send((message) => {
+      message
+        .to(user.email)
+        .from(env.get('SMTP_USERNAME'))
+        .subject('Marketplace account activation')
+        .htmlView('emails/activate_account_email_html', {
+          url: `${env.get('CLIENT_URL')}/auth/login`,
+          name: `${user.firstName} ${user.lastName}`,
+          email: `${user.email}`,
+        })
+    })
+
     return response.json({ msg: 'User activated successfully!' })
   }
 
@@ -68,6 +83,14 @@ export default class UserController {
     const { page, limit, search, sort = 'id', order = 'desc' } = request.qs()
 
     const data: any = await UserServices.getUsers(page, limit, search, false, sort, order)
+
+    return response.json(data)
+  }
+
+  async getUser({ response, params }: HttpContext) {
+    const { id } = params
+
+    const data = await User.query().where('id', id).andWhere('isAdmin', false).firstOrFail()
 
     return response.json(data)
   }

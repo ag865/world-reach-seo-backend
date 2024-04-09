@@ -2,6 +2,7 @@ import NotFoundException from '#exceptions/NotFoundException'
 import User from '#models/User'
 
 import { AuthServices, UserServices } from '#services/index'
+import env from '#start/env'
 import {
   loginValidator,
   referralSignupValidator,
@@ -9,14 +10,16 @@ import {
   signupValidator,
   updatePasswordValidator,
 } from '#validators/AuthValidator'
+import { cuid } from '@adonisjs/core/helpers'
 import { HttpContext } from '@adonisjs/core/http'
 import hash from '@adonisjs/core/services/hash'
+import mail from '@adonisjs/mail/services/main'
 
 export default class AuthController {
   async clientLogin({ request, response }: HttpContext) {
     const data = await request.validateUsing(loginValidator)
 
-    const user = await AuthServices.loginUser(data.email, data.password, 'Client')
+    const user = await AuthServices.loginUser(data.email, data.password, 'Client', true)
 
     if (!user.isActive) throw new NotFoundException('email', 'Your account is not approved yet')
 
@@ -28,10 +31,27 @@ export default class AuthController {
   async clientSignup({ request, response }: HttpContext) {
     const data = await request.validateUsing(signupValidator)
 
-    await AuthServices.registerUser({ ...data, isActive: false })
+    const user = await AuthServices.registerUser({
+      ...data,
+      isActive: false,
+      isVerified: false,
+      referralKey: cuid(),
+    })
+
+    await mail.send((message) => {
+      message
+        .to(user.email)
+        .from(env.get('SMTP_USERNAME'))
+        .subject('Verify your email address')
+        .htmlView('emails/verify_email_html', {
+          url: `${env.get('CLIENT_URL')}/auth/verify/${user.referralKey}`,
+          name: `${user.firstName} ${user.lastName}`,
+          clientURL: env.get('CLIENT_URL'),
+        })
+    })
 
     return response.json({
-      msg: 'Account created successfully, please wait for approval from our side.',
+      msg: 'Account created successfully, please check your mail inbox and verify your email address.',
     })
   }
 
@@ -52,6 +72,7 @@ export default class AuthController {
         password: hashedPassword,
         referralKey: '',
         isActive: true,
+        isVerified: true,
       },
       'id',
       user.id
@@ -75,7 +96,19 @@ export default class AuthController {
   async clientResetPassword({ request, response }: HttpContext) {
     const data = await request.validateUsing(resetPasswordValidator)
 
-    await AuthServices.updateResetPasswordKey(data.email, 'Client')
+    const user = await AuthServices.updateResetPasswordKey(data.email, 'Client')
+    if (user)
+      await mail.send((message) => {
+        message
+          .to(user.email)
+          .from(env.get('SMTP_USERNAME'))
+          .subject('Reset your password')
+          .htmlView('emails/recover_password_email_html', {
+            url: `${env.get('CLIENT_URL')}/auth/recover-password/${user.resetPasswordKey}`,
+            name: `${user.firstName} ${user.lastName}`,
+            clientURL: env.get('CLIENT_URL'),
+          })
+      })
 
     return response.json({ msg: 'Reset password link has been sent to your email!' })
   }
@@ -132,5 +165,19 @@ export default class AuthController {
     await User.accessTokens.delete(user!, userId)
 
     return response.json({ msg: 'Successfully logged out' })
+  }
+
+  async verifyAccount({ params, response }: HttpContext) {
+    const { id } = params
+
+    const user = await UserServices.getUserByValue('referralKey', id)
+
+    if (!user) throw new NotFoundException('email', 'Invalid email address')
+
+    await UserServices.update({ isVerified: true }, 'referralKey', id)
+
+    return response.json({
+      msg: 'Your Account has been verified successfully! You will receive an email when your account will be activated by our team!',
+    })
   }
 }

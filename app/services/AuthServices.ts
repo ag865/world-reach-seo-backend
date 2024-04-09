@@ -4,11 +4,18 @@ import { cuid } from '@adonisjs/core/helpers'
 import hash from '@adonisjs/core/services/hash'
 import { UserServices } from './index.js'
 
-const loginUser = async (email: string, password: string, userType: 'Admin' | 'Client') => {
+const loginUser = async (
+  email: string,
+  password: string,
+  userType: 'Admin' | 'Client',
+  checkVerification?: boolean
+) => {
   const user = await UserServices.getUserByValue('email', email)
   if (!user) throw new InvalidCredentialsException()
   if (userType === 'Admin' && !user?.isAdmin) throw new ForbiddenAccessException()
   if (userType === 'Client' && user?.isAdmin) throw new ForbiddenAccessException()
+  if (checkVerification && !user?.isVerified)
+    throw new ForbiddenAccessException('email', 'Please verify your email address')
 
   const passwordMatched = await hash.verify(user.password, password)
   if (!passwordMatched) throw new InvalidCredentialsException('password')
@@ -17,7 +24,7 @@ const loginUser = async (email: string, password: string, userType: 'Admin' | 'C
 }
 
 const registerUser = async (data: any) => {
-  await UserServices.create(data)
+  return await UserServices.create(data)
 }
 
 const updateResetPasswordKey = async (email: any, userType: 'Admin' | 'Client') => {
@@ -27,6 +34,8 @@ const updateResetPasswordKey = async (email: any, userType: 'Admin' | 'Client') 
   if (userType === 'Client' && user?.isAdmin) throw new ForbiddenAccessException()
 
   await UserServices.update({ resetPasswordKey: cuid(), isActive: false }, 'id', user?.id)
+
+  return await UserServices.getUserByValue('email', email)
 }
 
 const updatePassword = async (password: string, id: number) => {

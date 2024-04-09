@@ -18,6 +18,9 @@ export default await Env.create(new URL('../', import.meta.url), {
   HOST: Env.schema.string({ format: 'host' }),
   LOG_LEVEL: Env.schema.string(),
 
+  CLIENT_URL: Env.schema.string(),
+  ADMIN_URL: Env.schema.string(),
+
   /*
   |----------------------------------------------------------
   | Variables for configuring database connection
@@ -35,5 +38,17 @@ export default await Env.create(new URL('../', import.meta.url), {
   |----------------------------------------------------------
   */
   SMTP_HOST: Env.schema.string(),
-  SMTP_PORT: Env.schema.string()
+  SMTP_PORT: Env.schema.string(),
+  SMTP_USERNAME: Env.schema.string(),
+  SMTP_PASSWORD: Env.schema.string(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for payment methods
+  |----------------------------------------------------------
+  */
+  STRIPE_KEY: Env.schema.string(),
+  STRIPE_SECRET: Env.schema.string(),
+  PAYPAL_ID: Env.schema.string(),
+  PAYPAL_SECRET: Env.schema.string(),
 })

@@ -1,5 +1,7 @@
 import CategoriesController from '#controllers/AdminControllers/CategoriesController'
+import DashboardController from '#controllers/AdminControllers/DashboardController'
 import MemberController from '#controllers/AdminControllers/MemberController'
+import OrdersController from '#controllers/AdminControllers/OrdersController'
 import PaymentApiSettingsController from '#controllers/AdminControllers/PaymentAPISettingController'
 import SalesRepresentativesController from '#controllers/AdminControllers/SalesRepresentativesController'
 import UserController from '#controllers/AdminControllers/UserController'
@@ -26,6 +28,7 @@ router
         router.put('de-activate/:id', [UserController, 'deActivate'])
         router.put('/:id', [UserController, 'update'])
         router.get('/', [UserController, 'get'])
+        router.get('/:id', [UserController, 'getUser'])
         router.delete('/:id', [UserController, 'destroy'])
       })
       .prefix('user')
@@ -50,8 +53,14 @@ router
       .only(['index', 'store', 'update', 'destroy'])
 
     router.post('/website/import', [WebsiteMultipleUploadsController])
+
     router.post('/website/delete-multiple', [WebsiteMultipleDeleteController])
+
     router.get('/website/export', [WebsiteExportController])
+
+    router.resource('/admin-order', OrdersController).apiOnly().except(['destroy'])
+
+    router.get('/dashboard', [DashboardController])
   })
   .prefix('/api/admin')
   .use([middleware.auth({ guards: ['api'] }), middleware.isAdmin()])
