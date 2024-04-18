@@ -26,7 +26,13 @@ export default class OrdersController {
 
     const orderNumber = await OrderServices.getOrderNumber()
 
-    const order = await OrderMaster.create({ ...data, userId, status: 'Pending', orderNumber })
+    const order = await OrderMaster.create({
+      ...data,
+      userId,
+      status: 'Pending',
+      orderNumber,
+      paymentStatus: 'Paid',
+    })
 
     await order.related('details').createMany(details)
 

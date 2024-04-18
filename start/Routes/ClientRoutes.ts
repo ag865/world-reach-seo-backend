@@ -4,6 +4,7 @@ import BillingAddressController from '#controllers/ClientControllers/BillingAddr
 import CartsController from '#controllers/ClientControllers/CartController'
 import CategoryController from '#controllers/ClientControllers/CategoryController'
 import OrdersController from '#controllers/ClientControllers/OrdersController'
+import PaypalController from '#controllers/ClientControllers/PaypalController'
 import SalesRepresentativesController from '#controllers/ClientControllers/SalesRepresentativeController'
 import StripesController from '#controllers/ClientControllers/StripeController'
 import WebsitesController from '#controllers/ClientControllers/WebsiteController'
@@ -41,6 +42,8 @@ router
     router.resource('/order', OrdersController).apiOnly().except(['destroy'])
 
     router.resource('/stripe', StripesController).apiOnly().only(['index', 'store'])
+
+    router.resource('/paypal', PaypalController).apiOnly().only(['update', 'store'])
   })
   .prefix('/api/user')
   .use([middleware.auth({ guards: ['api'] }), middleware.isClient()])
