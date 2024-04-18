@@ -64,8 +64,9 @@ export default class PaypalController {
   }
   async update({ response, params }: HttpContext) {
     const { id } = params
-    console.log({ id })
+
     const accessToken = await generateAccessToken()
+
     const url = `${PAYPAL_URL}/v2/checkout/orders/${id}/capture`
 
     const res = await fetch(url, {
