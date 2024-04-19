@@ -29,31 +29,25 @@ const createWebsiteObject = (d: any) => {
     sellingGeneralPrice: d['Selling price'],
     paidCasinoPrice: d['Paid casino price'],
     sellingCasinoPrice: d['Selling casino price'],
-    paidEroticPrice: d['Paid erotic price'],
-    sellingEroticPrice: d['Selling erotic price'],
-    paidCryptoPrice: d['Paid crypto price'],
-    sellingCryptoPrice: d['Selling crypto price'],
-    oldPrice: d['Old price'],
+    sellingSportsBettingPrice: d['Selling sports betting price'],
+    paidSportsBettingPrice: d['Paid sports betting price'],
+    paidForexPrice: d['Paid forex price'],
+    sellingForexPrice: d['Selling forex price'],
     homepageLinkPrice: d['Homepage link price'],
+    homepageLinkNotes: d['Homepage link notes'],
     mozDA: d['Moz (DA)'],
     aHrefsDR: d['Ahrefs - DR'],
     organicTraffic: d['Organic traffic'],
     spamScore: d['Spam score'],
     trustFlow: d['Trust flow'],
-    semursh: d['Semursh'],
-    referringDomain: d['Referring domains'],
-    domainAge: d['Domain age'],
-    bazoomPrice: d['Bazoom price'],
-    bazoomPriceGambling: d['Bazoom price gambling'],
-    bazoomPriceErotic: d['Bazoom price erotic'],
-    bazoomPriceCrypto: d['Bazoom price crypto'],
     domain: d['Domain'],
     websiteEmail: d['Website email'],
-    oldEmail: d['Old email'],
     currentEmail: d['Current email'],
     loyalServices: d['Loyal services'],
     banner: d['Banner'],
-    notes: d['Notes'],
+    bannerNotes: d['Banner notes'],
+    adminNotes: d['Admin notes'],
+    clientNotes: d['User notes'],
     currency: d['Currency'],
     language: d['Language'],
     country: d['Country'],
@@ -233,10 +227,6 @@ const getWebsites = async (params: any, paginate = true, getCount = false) => {
     priceMax,
     organicTrafficMin = 0,
     organicTrafficMax,
-    semurshMin = 0,
-    semurshMax,
-    referringDomainsMin = 0,
-    referringDomainsMax,
     homePageLink = false,
     ids = [],
     search = '',
@@ -269,9 +259,9 @@ const getWebsites = async (params: any, paginate = true, getCount = false) => {
 
   if (niche) {
     const niches = typeof niche === 'string' ? [niche] : niche
-    if (niches.includes('Casino')) query.andWhere('sellingCasinoPrice', '>', 0)
-    if (niches.includes('Crypto')) query.andWhere('sellingCryptoPrice', '>', 0)
-    if (niches.includes('Erotic')) query.andWhere('sellingEroticPrice', '>', 0)
+    if (niches.includes('Gambling')) query.andWhere('acceptsGambling', true)
+    if (niches.includes('Forex')) query.andWhere('acceptsForex', true)
+    if (niches.includes('Sports Betting')) query.andWhere('sportsBetting', true)
   }
 
   if (mozDaMin) query.andWhere('moz_da', '>=', mozDaMin)
@@ -289,14 +279,6 @@ const getWebsites = async (params: any, paginate = true, getCount = false) => {
   if (organicTrafficMin) query.andWhere('organic_traffic', '>=', organicTrafficMin)
 
   if (organicTrafficMax) query.andWhere('organic_traffic', '<=', organicTrafficMax)
-
-  if (semurshMin) query.andWhere('semursh', '>=', semurshMin)
-
-  if (semurshMax) query.andWhere('semursh', '<=', semurshMax)
-
-  if (referringDomainsMin) query.andWhere('referring_domain', '>=', referringDomainsMin)
-
-  if (referringDomainsMax) query.andWhere('referring_domain', '<=', referringDomainsMax)
 
   if (priceMin) query.andWhere('selling_general_price', '>=', priceMin)
 

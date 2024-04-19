@@ -24,34 +24,22 @@ export default class Website extends BaseModel {
   declare sellingCasinoPrice: number
 
   @column()
-  declare paidEroticPrice: number
+  declare paidSportsBettingPrice: number
 
   @column()
-  declare sellingEroticPrice: number
+  declare sellingSportsBettingPrice: number
 
   @column()
-  declare paidCryptoPrice: number
+  declare paidForexPrice: number
 
   @column()
-  declare sellingCryptoPrice: number
-
-  @column()
-  declare oldPrice: number
+  declare sellingForexPrice: number
 
   @column()
   declare homepageLinkPrice: number
 
   @column()
-  declare bazoomPrice: number
-
-  @column()
-  declare bazoomPriceGambling: number
-
-  @column()
-  declare bazoomPriceErotic: number
-
-  @column()
-  declare bazoomPriceCrypto: number
+  declare homepageLinkNotes: string
 
   @column()
   declare mozDA: number
@@ -69,19 +57,7 @@ export default class Website extends BaseModel {
   declare trustFlow: number
 
   @column()
-  declare semursh: number
-
-  @column()
-  declare referringDomain: number
-
-  @column()
-  declare domainAge: number
-
-  @column()
   declare websiteEmail: string
-
-  @column()
-  declare oldEmail: string
 
   @column()
   declare currentEmail: string
@@ -93,7 +69,13 @@ export default class Website extends BaseModel {
   declare banner: string
 
   @column()
-  declare notes: string
+  declare bannerNotes: string
+
+  @column()
+  declare adminNotes: string
+
+  @column()
+  declare clientNotes: string
 
   @column()
   declare homePageLink: boolean
