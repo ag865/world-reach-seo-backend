@@ -1,6 +1,8 @@
 import OrderDetail from '#models/OrderDetail'
 import OrderMaster from '#models/OrderMaster'
-import { OrderServices } from '#services/index'
+import User from '#models/User'
+import Ws from '#services/Ws'
+import { NotificationServices, OrderServices } from '#services/index'
 import { createOrderValidator } from '#validators/OrderValidator'
 import type { HttpContext } from '@adonisjs/core/http'
 
@@ -36,6 +38,17 @@ export default class OrdersController {
 
     await order.related('details').createMany(details)
 
+    const user = await User.query().where('id', order.userId).first()
+
+    const notification = await NotificationServices.create(
+      order.orderNumber,
+      'Admin',
+      `New Order - ${order.orderNumber}`,
+      `A new order has been placed from Mr/Ms '${user!.firstName} ${user!.lastName}'.`
+    )
+
+    Ws.io?.emit('message', notification)
+
     return response.json({ msg: 'Order placed successfully', order })
   }
 
@@ -52,9 +65,25 @@ export default class OrdersController {
 
     const { id } = params
 
+    const detail = await OrderDetail.query()
+      .preload('order', (query) => {
+        query.preload('user')
+      })
+      .preload('website')
+      .where('id', id)
+      .first()
+
     await OrderDetail.query()
       .where('id', id)
-      .update({ ...data })
+      .update({ ...data, detailsAdded: true })
+
+    const notification = await NotificationServices.create(
+      detail!.order.orderNumber,
+      'Admin',
+      `Order Details ${detail?.detailsAdded ? 'Updated' : 'Added'} - ${detail!.order.orderNumber}`,
+      `Mr/Ms '${detail!.order.user.firstName} ${detail!.order.user.lastName}' have ${detail?.detailsAdded ? 'updated' : 'added'} details for ${detail?.website.domain}.`
+    )
+    Ws.io?.emit('message', notification)
 
     return response.json({ msg: 'Order updated successfully' })
   }

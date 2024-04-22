@@ -5,6 +5,7 @@ import OrdersController from '#controllers/AdminControllers/OrdersController'
 import PaymentApiSettingsController from '#controllers/AdminControllers/PaymentAPISettingController'
 import SalesRepresentativesController from '#controllers/AdminControllers/SalesRepresentativesController'
 import UserController from '#controllers/AdminControllers/UserController'
+import NotificationsController from '#controllers/AdminControllers/Website/NotificationsController'
 import WebsitesController from '#controllers/AdminControllers/Website/WebsiteController'
 import WebsiteExportController from '#controllers/AdminControllers/Website/WebsiteExportController'
 import WebsiteMultipleDeleteController from '#controllers/AdminControllers/Website/WebsiteMultipleDeleteController'
@@ -61,6 +62,14 @@ router
     router.resource('/admin-order', OrdersController).apiOnly().except(['destroy'])
 
     router.get('/dashboard', [DashboardController])
+
+    router
+      .group(() => {
+        router.put('/:id', [NotificationsController, 'update'])
+        router.get('/', [NotificationsController, 'index'])
+        router.get('/unread', [NotificationsController, 'getUnreadNotifications'])
+      })
+      .prefix('notification')
   })
   .prefix('/api/admin')
   .use([middleware.auth({ guards: ['api'] }), middleware.isAdmin()])

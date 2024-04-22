@@ -71,6 +71,9 @@ export default class OrderDetail extends BaseModel {
   @column()
   declare picture: boolean
 
+  @column()
+  declare detailsAdded: boolean
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
@@ -80,6 +83,6 @@ export default class OrderDetail extends BaseModel {
   @belongsTo(() => Website)
   declare website: Relations.BelongsTo<typeof Website>
 
-  @belongsTo(() => OrderMaster)
+  @belongsTo(() => OrderMaster, { foreignKey: 'orderId' })
   declare order: Relations.BelongsTo<typeof OrderMaster>
 }

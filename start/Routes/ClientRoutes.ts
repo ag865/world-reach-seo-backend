@@ -3,6 +3,7 @@ import AuthController from '#controllers/AuthController'
 import BillingAddressController from '#controllers/ClientControllers/BillingAddressController'
 import CartsController from '#controllers/ClientControllers/CartController'
 import CategoryController from '#controllers/ClientControllers/CategoryController'
+import NotificationsController from '#controllers/ClientControllers/NotificationsController'
 import OrdersController from '#controllers/ClientControllers/OrdersController'
 import PaypalController from '#controllers/ClientControllers/PaypalController'
 import SalesRepresentativesController from '#controllers/ClientControllers/SalesRepresentativeController'
@@ -44,6 +45,14 @@ router
     router.resource('/stripe', StripesController).apiOnly().only(['index', 'store'])
 
     router.resource('/paypal', PaypalController).apiOnly().only(['update', 'store'])
+
+    router
+      .group(() => {
+        router.put('/:id', [NotificationsController, 'update'])
+        router.get('/', [NotificationsController, 'index'])
+        router.get('/unread', [NotificationsController, 'getUnreadNotifications'])
+      })
+      .prefix('notification')
   })
   .prefix('/api/user')
   .use([middleware.auth({ guards: ['api'] }), middleware.isClient()])

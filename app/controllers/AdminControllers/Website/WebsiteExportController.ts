@@ -54,7 +54,6 @@ export default class WebsiteExportController {
           else categories += c.name + '| '
         })
       }
-      console.log(categories)
       csvData.push([
         d.paidGeneralPrice ? d.paidGeneralPrice?.toString() : '',
         d.paidCasinoPrice ? d.paidCasinoPrice?.toString() : '',

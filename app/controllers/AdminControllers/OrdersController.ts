@@ -1,6 +1,7 @@
 import OrderDetail from '#models/OrderDetail'
 import OrderMaster from '#models/OrderMaster'
-import { OrderServices } from '#services/index'
+import Ws from '#services/Ws'
+import { NotificationServices, OrderServices } from '#services/index'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class OrdersController {
@@ -37,7 +38,11 @@ export default class OrdersController {
 
     const { id } = params
 
-    const detail = await OrderDetail.query().where('id', id).first()
+    const detail = await OrderDetail.query()
+      .preload('order')
+      .preload('website')
+      .where('id', id)
+      .first()
 
     let dataToUpdate: any = { ...data }
 
@@ -47,13 +52,35 @@ export default class OrdersController {
 
     await OrderDetail.query().where('id', id).update(dataToUpdate)
 
+    const notification = await NotificationServices.create(
+      detail!.order.orderNumber,
+      'Client',
+      `Media Status Updated - ${detail!.order.poNumber ?? detail!.order.orderNumber}`,
+      `Order media status changed from '${detail!.status}' to '${data.status}' for media '${detail!.website.domain}' .`,
+      detail!.order?.userId
+    )
+
+    Ws.io?.emit('message', notification)
+
     return response.json({ msg: 'Order updated successfully' })
   }
 
   async store({ request, response }: HttpContext) {
     const { status, id }: any = request.body()
 
+    const order = await OrderMaster.query().preload('user').where('id', id).first()
+
     await OrderMaster.query().where('id', id).update({ status })
+
+    const notification = await NotificationServices.create(
+      order!.orderNumber,
+      'Client',
+      `Order Status Updated - '${order!.poNumber ?? order!.orderNumber}'`,
+      `Order status changed from '${order?.status}' to '${status}'.`,
+      order?.userId
+    )
+
+    Ws.io?.emit('message', notification)
 
     return response.json({ msg: 'Order updated successfully' })
   }
