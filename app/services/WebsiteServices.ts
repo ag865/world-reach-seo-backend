@@ -45,6 +45,7 @@ const createWebsiteObject = (d: any) => {
     currentEmail: d['Current email'],
     loyalServices: d['Loyal services'],
     banner: d['Banner'],
+    bannerPrice: d['Banner price'],
     bannerNotes: d['Banner notes'],
     adminNotes: d['Admin notes'],
     clientNotes: d['User notes'],
@@ -141,27 +142,39 @@ const createNewWebsites = async (websites: any[]) => {
   for (let i = 0; i < websites.length; i++) {
     const website = websites[i]
 
-    let { categories, homePageLink, acceptsGambling, acceptsForex, sportsBetting, ...data } =
-      website
+    let {
+      categories,
+      homePageLink,
+      acceptsGambling,
+      acceptsForex,
+      sportsBetting,
+      banner,
+      ...data
+    } = website
 
     if (homePageLink) {
-      if (homePageLink === 'Yes') data = { ...data, homePageLink: true }
+      if (homePageLink.toLowerCase() === 'yes') data = { ...data, homePageLink: true }
       else data = { ...data, homePageLink: false }
     }
 
     if (acceptsGambling) {
-      if (acceptsGambling === 'Yes') data = { ...data, acceptsGambling: true }
-      else data = { ...data, acceptsGambling: true }
+      if (acceptsGambling.toLowerCase() === 'yes') data = { ...data, acceptsGambling: true }
+      else data = { ...data, acceptsGambling: false }
     }
 
     if (acceptsForex) {
-      if (acceptsForex === 'Yes') data = { ...data, acceptsForex: true }
-      else data = { ...data, acceptsForex: true }
+      if (acceptsForex.toLowerCase() === 'yes') data = { ...data, acceptsForex: true }
+      else data = { ...data, acceptsForex: false }
     }
 
     if (sportsBetting) {
-      if (sportsBetting === 'Yes') data = { ...data, sportsBetting: true }
-      else data = { ...data, sportsBetting: true }
+      if (sportsBetting.toLowerCase() === 'yes') data = { ...data, sportsBetting: true }
+      else data = { ...data, sportsBetting: false }
+    }
+
+    if (banner) {
+      if (banner.toLowerCase() === 'yes') data = { ...data, banner: true }
+      else data = { ...data, banner: false }
     }
 
     const newWebsite = await Website.create(data)
@@ -178,27 +191,39 @@ const updateWebsites = async (websites: any[], existingWebsites: Website[]) => {
       (existingWebsite) => existingWebsite.domain === website.domain
     )!
 
-    let { categories, homePageLink, acceptsGambling, acceptsForex, sportsBetting, ...data } =
-      website
+    let {
+      categories,
+      homePageLink,
+      acceptsGambling,
+      acceptsForex,
+      sportsBetting,
+      banner,
+      ...data
+    } = website
 
     if (homePageLink) {
-      if (homePageLink === 'Yes') data = { ...data, homePageLink: true }
+      if (homePageLink.toLowerCase() === 'yes') data = { ...data, homePageLink: true }
       else data = { ...data, homePageLink: false }
     }
 
     if (acceptsGambling) {
-      if (acceptsGambling === 'Yes') data = { ...data, acceptsGambling: true }
-      else data = { ...data, acceptsGambling: true }
+      if (acceptsGambling.toLowerCase() === 'yes') data = { ...data, acceptsGambling: true }
+      else data = { ...data, acceptsGambling: false }
     }
 
     if (acceptsForex) {
-      if (acceptsForex === 'Yes') data = { ...data, acceptsForex: true }
-      else data = { ...data, acceptsForex: true }
+      if (acceptsForex.toLowerCase() === 'yes') data = { ...data, acceptsForex: true }
+      else data = { ...data, acceptsForex: false }
     }
 
     if (sportsBetting) {
-      if (sportsBetting === 'Yes') data = { ...data, sportsBetting: true }
-      else data = { ...data, sportsBetting: true }
+      if (sportsBetting.toLowerCase() === 'yes') data = { ...data, sportsBetting: true }
+      else data = { ...data, sportsBetting: false }
+    }
+
+    if (banner) {
+      if (banner.toLowerCase() === 'yes') data = { ...data, banner: true }
+      else data = { ...data, banner: false }
     }
 
     await Website.query().update(data).where('id', existingWebsite.id)
@@ -228,6 +253,7 @@ const getWebsites = async (params: any, paginate = true, getCount = false) => {
     organicTrafficMin = 0,
     organicTrafficMax,
     homePageLink = false,
+    banner = false,
     ids = [],
     search = '',
   } = params
@@ -286,6 +312,8 @@ const getWebsites = async (params: any, paginate = true, getCount = false) => {
 
   if (homePageLink && homePageLink !== 'None')
     query.andWhere('home_page_link', homePageLink.toLowerCase())
+
+  if (banner && banner !== 'None') query.andWhere('banner', banner.toLowerCase())
 
   if (getCount) return await query.count('id')
 

@@ -36,7 +36,38 @@ export default class WebsitesController {
     const { categories, ...data } = await request.validateUsing(updateWebsiteValidator(id))
 
     await Website.query()
-      .update({ ...data })
+      .update({
+        domain: data.domain,
+        paidGeneralPrice: data.paidGeneralPrice ?? null,
+        sellingGeneralPrice: data.sellingGeneralPrice ?? null,
+        paidCasinoPrice: data.paidCasinoPrice ?? null,
+        sellingCasinoPrice: data.sellingCasinoPrice ?? null,
+        paidSportsBettingPrice: data.paidSportsBettingPrice ?? null,
+        sellingSportsBettingPrice: data.sellingSportsBettingPrice ?? null,
+        paidForexPrice: data.paidForexPrice ?? null,
+        sellingForexPrice: data.sellingForexPrice ?? null,
+        homepageLinkPrice: data.homepageLinkPrice ?? null,
+        homepageLinkNotes: data.homepageLinkNotes ?? null,
+        mozDA: data.mozDA ?? null,
+        aHrefsDR: data.aHrefsDR ?? null,
+        organicTraffic: data.organicTraffic ?? null,
+        spamScore: data.spamScore ?? null,
+        trustFlow: data.trustFlow ?? null,
+        websiteEmail: data.websiteEmail ?? null,
+        currentEmail: data.currentEmail ?? null,
+        banner: data.banner ?? null,
+        bannerPrice: data.bannerPrice ?? null,
+        bannerNotes: data.bannerNotes ?? null,
+        adminNotes: data.adminNotes ?? null,
+        clientNotes: data.clientNotes ?? null,
+        homePageLink: data.homePageLink ?? null,
+        acceptsGambling: data.acceptsGambling ?? null,
+        acceptsForex: data.acceptsForex ?? null,
+        sportsBetting: data.sportsBetting ?? null,
+        currency: data.currency ?? null,
+        language: data.language ?? null,
+        country: data.country ?? null,
+      })
       .where('id', id)
 
     if (categories) await website!.related('categories').sync(categories)

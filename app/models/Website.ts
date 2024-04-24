@@ -66,7 +66,10 @@ export default class Website extends BaseModel {
   declare loyalServices: string
 
   @column()
-  declare banner: string
+  declare banner: boolean
+
+  @column()
+  declare bannerPrice: number
 
   @column()
   declare bannerNotes: string
