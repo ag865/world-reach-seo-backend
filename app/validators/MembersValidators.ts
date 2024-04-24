@@ -15,6 +15,13 @@ export const updateMemberValidator = (id: number) =>
           extnames: ['jpg', 'png', 'jpeg', 'webp'],
         })
         .optional(),
+
+      password: vine
+        .string()
+        .trim()
+        .minLength(8)
+        .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/)
+        .optional(),
     })
   )
 
@@ -24,6 +31,9 @@ updateMemberValidator.messagesProvider = new SimpleMessagesProvider({
   'email.required': 'Email is required',
   'email.email': 'Invalid email address',
   'avatar.file.extname': 'Please upload an image file',
+  'password.minLength': 'Password must be 8 characters long',
+  'password.regex':
+    'Password must contain at least one upper case letter, one lower case letter, one number and one special character',
 })
 
 export const createMemberValidator = vine.compile(
@@ -40,6 +50,11 @@ export const createMemberValidator = vine.compile(
         extnames: ['jpg', 'png', 'jpeg', 'webp'],
       })
       .optional(),
+    password: vine
+      .string()
+      .trim()
+      .minLength(8)
+      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/),
   })
 )
 
@@ -49,6 +64,10 @@ createMemberValidator.messagesProvider = new SimpleMessagesProvider({
   'email.required': 'Email is required',
   'email.email': 'Invalid email address',
   'avatar.file.extname': 'Please upload an image file',
+  'password.required': 'Password is required',
+  'password.minLength': 'Password must be 8 characters long',
+  'password.regex':
+    'Password must contain at least one upper case letter, one lower case letter, one number and one special character',
 })
 
 export const updateUserValidator = vine.compile(

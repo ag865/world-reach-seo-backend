@@ -5,7 +5,6 @@ import { AuthServices, UserServices } from '#services/index'
 import env from '#start/env'
 import {
   loginValidator,
-  referralSignupValidator,
   resetPasswordValidator,
   signupValidator,
   updatePasswordValidator,
@@ -29,14 +28,24 @@ export default class AuthController {
   }
 
   async clientSignup({ request, response }: HttpContext) {
-    const data = await request.validateUsing(signupValidator)
+    const { key, ...data } = await request.validateUsing(signupValidator)
 
-    const user = await AuthServices.registerUser({
+    let dataToCreate: any = {
       ...data,
       isActive: false,
       isVerified: false,
       referralKey: cuid(),
-    })
+    }
+
+    let referral: User | null = null
+
+    if (key) {
+      referral = await UserServices.getUserByValue('referralKey', key)
+
+      if (referral) dataToCreate = { ...dataToCreate, referralId: referral.id }
+    }
+
+    const user = await AuthServices.registerUser(dataToCreate)
 
     await mail.send((message) => {
       message
@@ -50,38 +59,52 @@ export default class AuthController {
         })
     })
 
+    if (referral)
+      await mail.send((message) => {
+        message
+          .to(referral.email)
+          .from(env.get('SMTP_USERNAME'))
+          .subject('New Referral Sign up')
+          .htmlView('emails/referral_sign_up', {
+            name: `${referral.firstName} ${referral.lastName}`,
+            clientName: `${user.firstName} ${user.lastName}`,
+            clientEmail: `${user.email}`,
+            url: `${env.get('ADMIN_URL')}/users`,
+          })
+      })
+
     return response.json({
       msg: 'Account created successfully, please check your mail inbox and verify your email address.',
     })
   }
 
-  async adminReferralSignup({ request, response, params }: HttpContext) {
-    const { key } = params
+  // async adminReferralSignup({ request, response, params }: HttpContext) {
+  //   const { key } = params
 
-    const user = await UserServices.getUserByValue('referralKey', key)
+  //   const user = await UserServices.getUserByValue('referralKey', key)
 
-    if (!user || !user.isAdmin) throw new NotFoundException('key', 'Invalid referral key!')
+  //   if (!user || !user.isAdmin) throw new NotFoundException('key', 'Invalid referral key!')
 
-    const data = await request.validateUsing(referralSignupValidator(user.id))
+  //   const data = await request.validateUsing(referralSignupValidator(user.id))
 
-    const hashedPassword = await hash.make(data.password)
+  //   const hashedPassword = await hash.make(data.password)
 
-    await UserServices.update(
-      {
-        ...data,
-        password: hashedPassword,
-        referralKey: '',
-        isActive: true,
-        isVerified: true,
-      },
-      'id',
-      user.id
-    )
+  //   await UserServices.update(
+  //     {
+  //       ...data,
+  //       password: hashedPassword,
+  //       referralKey: '',
+  //       isActive: true,
+  //       isVerified: true,
+  //     },
+  //     'id',
+  //     user.id
+  //   )
 
-    return response.json({
-      msg: 'Member signed up successfully, you can now login using your credentials!',
-    })
-  }
+  //   return response.json({
+  //     msg: 'Member signed up successfully, you can now login using your credentials!',
+  //   })
+  // }
 
   async getUserDetailsByReferralKey({ response, params }: HttpContext) {
     const { key } = params
@@ -97,6 +120,7 @@ export default class AuthController {
     const data = await request.validateUsing(resetPasswordValidator)
 
     const user = await AuthServices.updateResetPasswordKey(data.email, 'Client')
+
     if (user)
       await mail.send((message) => {
         message

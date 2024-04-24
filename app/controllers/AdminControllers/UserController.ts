@@ -80,9 +80,24 @@ export default class UserController {
   }
 
   async get({ response, request }: HttpContext) {
-    const { page, limit, search, sort = 'id', order = 'desc' } = request.qs()
+    const {
+      page,
+      limit,
+      search,
+      sort = 'id',
+      order = 'desc',
+      referralId = undefined,
+    } = request.qs()
 
-    const data: any = await UserServices.getUsers(page, limit, search, false, sort, order)
+    const data: any = await UserServices.getUsers(
+      page,
+      limit,
+      search,
+      false,
+      sort,
+      order,
+      referralId
+    )
 
     return response.json(data)
   }

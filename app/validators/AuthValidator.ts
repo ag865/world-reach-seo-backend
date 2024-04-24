@@ -61,6 +61,7 @@ export const signupValidator = vine.compile(
       .trim()
       .minLength(8)
       .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/),
+    key: vine.string().optional(),
   })
 )
 

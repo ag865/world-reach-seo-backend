@@ -4,6 +4,7 @@ import { createMemberValidator, updateMemberValidator } from '#validators/Member
 import { cuid } from '@adonisjs/core/helpers'
 import { HttpContext } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
+import hash from '@adonisjs/core/services/hash'
 
 export default class MemberController {
   async store({ request, response }: HttpContext) {
@@ -17,7 +18,16 @@ export default class MemberController {
       data = { ...data, avatar: fileName }
     }
 
-    await AuthServices.registerUser({ ...data, referralKey: cuid(), isAdmin: true })
+    const hashedPassword = await hash.make(data.password)
+
+    await AuthServices.registerUser({
+      ...data,
+      referralKey: cuid(),
+      isAdmin: true,
+      isActive: true,
+      password: hashedPassword,
+      isVerified: true,
+    })
 
     return response.json({ msg: 'Member created successfully!' })
   }
@@ -37,6 +47,11 @@ export default class MemberController {
       const fileName = `${cuid()}.${avatar.clientName}`
       await avatar.move(app.makePath('uploads'), { name: fileName })
       data = { ...data, avatar: fileName }
+    }
+
+    if (data.password) {
+      const hashedPassword = await hash.make(data.password)
+      data = { ...data, password: hashedPassword }
     }
 
     await UserServices.update(data, 'id', id)

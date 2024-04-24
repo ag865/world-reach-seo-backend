@@ -19,8 +19,6 @@ router
   .group(() => {
     router.post('login', [AuthController, 'adminLogin'])
 
-    router.put('register/:key', [AuthController, 'adminReferralSignup'])
-
     router.put('update-password/:key', [AuthController, 'updatePassword'])
 
     router.post('reset-password', [AuthController, 'adminResetPassword'])

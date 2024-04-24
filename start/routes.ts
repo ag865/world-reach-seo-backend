@@ -16,4 +16,3 @@ import './Routes/AuthRoutes.js'
 import './Routes/ClientRoutes.js'
 
 router.get('/api/image/:key', [ImageController, 'download'])
-

@@ -22,7 +22,8 @@ const getUsers = async (
   search: string = '',
   isAdmin: boolean = true,
   sort: string = 'id',
-  order: 'asc' | 'desc' = 'desc'
+  order: 'asc' | 'desc' = 'desc',
+  referralId?: number
 ) => {
   const query = User.query()
     .preload('countries')
@@ -32,6 +33,8 @@ const getUsers = async (
         .whereRaw("LOWER(first_name || ' ' || last_name) LIKE ?", [`%${search.toLowerCase()}%`])
         .orWhereILike('email', `%${search}%`)
     })
+
+  if (referralId) query.andWhere('referralId', referralId)
 
   const sortColumns = sort.split(',')
 
