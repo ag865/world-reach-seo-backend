@@ -49,7 +49,7 @@ export default class WebsiteExportController {
 
     const pages = Math.ceil(count / 100)
 
-    for (let i = 1; i < pages; i++) {
+    for (let i = 0; i < pages; i++) {
       const websites = await getWebsites({ ...params, page: i + 1, limit: 100 }, true, false)
       data = [...data, ...websites]
     }
@@ -106,7 +106,7 @@ export default class WebsiteExportController {
 
     await response.header('Content-Disposition', `attachment; filename=${fileName}`)
 
-    response.header('Content-Type', 'text/csv')
+    response.header('Content-Type', 'text/csv; charset=utf-8')
 
     return response.send(csvContent)
   }

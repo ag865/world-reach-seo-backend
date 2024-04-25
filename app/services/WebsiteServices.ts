@@ -27,14 +27,14 @@ const getColumnData = (value: any) => {
 
 const getBooleanColumnData = (value: any) => {
   if (!value) return false
-  if (value.toLowerCase() === 'yes') return true
+  if (value.toString().toLowerCase() === 'yes') return true
   return false
 }
 
 const createWebsiteObject = (d: any) => {
   if (!d['Domain']) return null
 
-  const categories = d['Categories']
+  const categories = d['Categories'].toString()
 
   let categoriesNames: string[] = []
 

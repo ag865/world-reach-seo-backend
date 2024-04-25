@@ -23,8 +23,20 @@ export default class WebsitesController {
     return response.json(data)
   }
 
-  async getCount({ response, request }: HttpContext) {
+  async getCount({ response, request, auth }: HttpContext) {
     let params = request.qs()
+
+    const { country } = params
+
+    if (!country) {
+      const user = await UserServices.getUserByValue('id', auth.user!.id!)
+
+      let countries: string[] | undefined = undefined
+
+      if (user?.countries.length) countries = user?.countries.map((country) => country.country)
+
+      params = { ...params, country: countries }
+    }
 
     const data = await getWebsites(params, true, true)
 
