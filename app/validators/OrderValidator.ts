@@ -21,6 +21,8 @@ const createOrderValidator = vine.compile(
           customId: vine.string().trim().optional(),
           restrictedNiche: vine.string().trim(),
           words: vine.number().optional(),
+          linkPrice: vine.number().optional(),
+          link: vine.string().optional(),
           contentByMarketplace: vine.boolean(),
           totalPrice: vine.number(),
           contentPrice: vine.number(),

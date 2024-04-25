@@ -36,7 +36,13 @@ export default class OrderDetail extends BaseModel {
   declare mediaPrice: number
 
   @column()
+  declare linkPrice: number
+
+  @column()
   declare status: string
+
+  @column()
+  declare link: string
 
   @column()
   declare publicationDate: DateTime
