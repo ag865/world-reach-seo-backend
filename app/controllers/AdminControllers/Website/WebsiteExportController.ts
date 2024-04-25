@@ -1,6 +1,6 @@
 import Category from '#models/Category'
 import Website from '#models/Website'
-import { getWebsites } from '#services/WebsiteServices'
+import { getCountWebsites, getWebsites } from '#services/WebsiteServices'
 import { HttpContext } from '@adonisjs/core/http'
 import moment from 'moment'
 
@@ -43,7 +43,16 @@ export default class WebsiteExportController {
   async handle({ request, response }: HttpContext) {
     const params = request.qs()
 
-    let data = (await getWebsites(params, false, false)) as Website[]
+    const count = await getCountWebsites(params)
+
+    let data: Website[] = []
+
+    const pages = Math.ceil(count / 100)
+
+    for (let i = 1; i < pages; i++) {
+      const websites = await getWebsites({ ...params, page: i + 1, limit: 100 }, true, false)
+      data = [...data, ...websites]
+    }
 
     const csvData: string[][] = []
 

@@ -275,4 +275,89 @@ const getWebsites = async (params: any, paginate = true, getCount = false) => {
   return await query.orderBy(sort, order)
 }
 
-export { addWebsites, getWebsites }
+const getCountWebsites = async (params: any) => {
+  const {
+    language = '',
+    country = '',
+    category = '',
+    niche = '',
+    mozDaMin = 0,
+    mozDaMax,
+    spamScoreMin = 0,
+    spamScoreMax,
+    aHrefsDrMin = 0,
+    aHrefsDrMax,
+    priceMin = 0,
+    priceMax,
+    organicTrafficMin = 0,
+    organicTrafficMax,
+    homePageLink = false,
+    banner = false,
+    ids = '',
+    search = '',
+  } = params
+
+  const query = Website.query()
+
+  if (search) query.andWhereILike('domain', `%${search}%`)
+
+  if (ids) {
+    const websiteIds = typeof ids === 'string' ? [ids] : ids
+    query.where('id', 'IN', websiteIds)
+  }
+
+  if (category) {
+    const categories = typeof category === 'string' ? [category] : category
+    query.whereHas('categories', (query) => {
+      query.whereInPivot('category_id', categories)
+    })
+  }
+
+  if (language) {
+    const languages = typeof language === 'string' ? [language] : language
+    query.andWhereIn('language', languages)
+  }
+
+  if (country) {
+    const countries = typeof country === 'string' ? [country] : country
+    query.andWhereIn('country', countries)
+  }
+
+  if (niche) {
+    const niches = typeof niche === 'string' ? [niche] : niche
+    if (niches.includes('Gambling')) query.andWhere('acceptsGambling', true)
+    if (niches.includes('Forex')) query.andWhere('acceptsForex', true)
+    if (niches.includes('Sports Betting')) query.andWhere('sportsBetting', true)
+  }
+
+  if (mozDaMin) query.andWhere('moz_da', '>=', mozDaMin)
+
+  if (mozDaMax) query.andWhere('moz_da', '<=', mozDaMax)
+
+  if (spamScoreMin) query.andWhere('spam_score', '>=', spamScoreMin)
+
+  if (spamScoreMax) query.andWhere('spam_score', '<=', spamScoreMax)
+
+  if (aHrefsDrMin) query.andWhere('a_hrefs_dr', '>=', aHrefsDrMin)
+
+  if (aHrefsDrMax) query.andWhere('a_hrefs_dr', '<=', aHrefsDrMax)
+
+  if (organicTrafficMin) query.andWhere('organic_traffic', '>=', organicTrafficMin)
+
+  if (organicTrafficMax) query.andWhere('organic_traffic', '<=', organicTrafficMax)
+
+  if (priceMin) query.andWhere('selling_general_price', '>=', priceMin)
+
+  if (priceMax) query.andWhere('selling_general_price', '<=', priceMax)
+
+  if (homePageLink && homePageLink !== 'None')
+    query.andWhere('home_page_link', homePageLink.toLowerCase())
+
+  if (banner && banner !== 'None') query.andWhere('banner', banner.toLowerCase())
+
+  const count = await query.count('* as total').first()
+
+  return count?.$extras.total
+}
+
+export { addWebsites, getCountWebsites, getWebsites }
