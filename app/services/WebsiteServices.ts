@@ -214,7 +214,10 @@ const getWebsites = async (params: any, paginate = true, getCount = false) => {
 
   if (search) query.andWhereILike('domain', `%${search}%`)
 
-  if (ids && ids.length) query.where('id', 'IN', ids)
+  if (ids) {
+    const websiteIds = typeof ids === 'string' ? [ids] : ids
+    query.where('id', 'IN', websiteIds)
+  }
 
   if (category) {
     const categories = typeof category === 'string' ? [category] : category
