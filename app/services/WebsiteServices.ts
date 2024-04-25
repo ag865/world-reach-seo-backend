@@ -204,7 +204,7 @@ const getWebsites = async (params: any, paginate = true, getCount = false) => {
     organicTrafficMax,
     homePageLink = false,
     banner = false,
-    ids = [],
+    ids = '',
     search = '',
   } = params
 
