@@ -84,10 +84,10 @@ export default class WebsiteExportController {
         d.websiteEmail ? d.websiteEmail?.toString() : '',
         d.createdAt ? moment(d.createdAt).format('MM.DD.YYYY') : '',
         d.updatedAt ? moment(d.updatedAt).format('MM.DD.YYYY') : '',
-        d.bannerNotes ? d.bannerNotes?.replace(',', '.').toString() : '',
-        d.homepageLinkNotes ? d.homepageLinkNotes?.replace(',', '.').toString() : '',
-        d.adminNotes ? d.adminNotes?.replace(',', '.').toString() : '',
-        d.clientNotes ? d.clientNotes?.replace(',', '.').toString() : '',
+        d.bannerNotes ? d.bannerNotes?.replace(/,/g, ';').toString() : '',
+        d.homepageLinkNotes ? d.homepageLinkNotes?.replace(/,/g, ';').toString() : '',
+        d.adminNotes ? d.adminNotes?.replace(/,/g, ';').toString() : '',
+        d.clientNotes ? d.clientNotes?.replace(/,/g, ';').toString() : '',
       ])
     })
 
