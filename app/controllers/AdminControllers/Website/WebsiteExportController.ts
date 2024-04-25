@@ -17,8 +17,6 @@ const csvHeaders = [
   'Language',
   'Country',
   'Domain',
-  'Admin Notes',
-  'User Notes',
   'Current email',
   'Categories',
   'Moz (DA)',
@@ -30,13 +28,15 @@ const csvHeaders = [
   'Forex',
   'Sports betting',
   'Homepage link',
-  'Homepage link notes',
   'Banner',
   'Banner price',
-  'Banner notes',
   'Website email',
   'Upload date',
   'Last updated',
+  'Banner notes',
+  'Homepage link notes',
+  'Admin Notes',
+  'User Notes',
 ]
 
 export default class WebsiteExportController {
@@ -68,8 +68,6 @@ export default class WebsiteExportController {
         d.language ? d.language?.toString() : '',
         d.country ? d.country?.toString() : '',
         d.domain ? d.domain?.toString() : '',
-        d.adminNotes ? d.adminNotes?.toString() : '',
-        d.clientNotes ? d.clientNotes?.toString() : '',
         d.currentEmail ? d.currentEmail?.toString() : '',
         categories,
         d.mozDA ? d.mozDA?.toString() : '',
@@ -81,13 +79,15 @@ export default class WebsiteExportController {
         d.acceptsForex ? 'Yes' : 'No',
         d.sportsBetting ? 'Yes' : 'No',
         d.homePageLink ? 'Yes' : 'No',
-        d.homepageLinkNotes ? d.homepageLinkNotes?.toString() : '',
         d.banner ? 'Yes' : 'No',
         d.bannerPrice ? d.bannerPrice?.toString() : '',
-        d.bannerNotes ? d.bannerNotes?.toString() : '',
         d.websiteEmail ? d.websiteEmail?.toString() : '',
         d.createdAt ? moment(d.createdAt).format('MM.DD.YYYY') : '',
         d.updatedAt ? moment(d.updatedAt).format('MM.DD.YYYY') : '',
+        d.bannerNotes ? d.bannerNotes?.replace(',', '.').toString() : '',
+        d.homepageLinkNotes ? d.homepageLinkNotes?.replace(',', '.').toString() : '',
+        d.adminNotes ? d.adminNotes?.replace(',', '.').toString() : '',
+        d.clientNotes ? d.clientNotes?.replace(',', '.').toString() : '',
       ])
     })
 

@@ -7,9 +7,11 @@ const addWebsites = async (data: any[]) => {
   const categories: string[] = []
 
   for (var i = 0; i < data.length; i++) {
-    const { categoriesNames, website } = createWebsiteObject(data[i])
-    websites.push(website)
-    categories.push(...categoriesNames)
+    const object = createWebsiteObject(data[i])
+    if (object) {
+      websites.push(object.website)
+      categories.push(...object.categoriesNames)
+    }
   }
 
   const categoryObjects = await manageCategories(categories)
@@ -17,7 +19,21 @@ const addWebsites = async (data: any[]) => {
   await createWebsites(getSiteObjects(categoryObjects, websites))
 }
 
+const getColumnData = (value: any) => {
+  if (!value) return null
+  const number = parseFloat(value)
+  return isNaN(number) ? null : number
+}
+
+const getBooleanColumnData = (value: any) => {
+  if (!value) return false
+  if (value.toLowerCase() === 'yes') return true
+  return false
+}
+
 const createWebsiteObject = (d: any) => {
+  if (!d['Domain']) return null
+
   const categories = d['Categories']
 
   let categoriesNames: string[] = []
@@ -25,37 +41,37 @@ const createWebsiteObject = (d: any) => {
   if (categories) categoriesNames = [...categories.split(',')]
 
   const website = {
-    paidGeneralPrice: d['Paid general price'],
-    sellingGeneralPrice: d['Selling price'],
-    paidCasinoPrice: d['Paid casino price'],
-    sellingCasinoPrice: d['Selling casino price'],
-    sellingSportsBettingPrice: d['Selling sports betting price'],
-    paidSportsBettingPrice: d['Paid sports betting price'],
-    paidForexPrice: d['Paid forex price'],
-    sellingForexPrice: d['Selling forex price'],
-    homepageLinkPrice: d['Homepage link price'],
+    paidGeneralPrice: getColumnData(d['Paid general price']),
+    sellingGeneralPrice: getColumnData(d['Selling price']),
+    paidCasinoPrice: getColumnData(d['Paid casino price']),
+    sellingCasinoPrice: getColumnData(d['Selling casino price']),
+    sellingSportsBettingPrice: getColumnData(d['Selling sports betting price']),
+    paidSportsBettingPrice: getColumnData(d['Paid sports betting price']),
+    paidForexPrice: getColumnData(d['Paid forex price']),
+    sellingForexPrice: getColumnData(d['Selling forex price']),
+    homepageLinkPrice: getColumnData(d['Homepage link price']),
     homepageLinkNotes: d['Homepage link notes'],
-    mozDA: d['Moz (DA)'],
-    aHrefsDR: d['Ahrefs - DR'],
-    organicTraffic: d['Organic traffic'],
-    spamScore: d['Spam score'],
-    trustFlow: d['Trust flow'],
-    domain: d['Domain'],
+    mozDA: getColumnData(d['Moz (DA)']),
+    aHrefsDR: getColumnData(d['Ahrefs - DR']),
+    organicTraffic: getColumnData(d['Organic traffic']),
+    spamScore: getColumnData(d['Spam score']),
+    trustFlow: getColumnData(d['Trust flow']),
+    domain: d['Domain'].toLowerCase(),
     websiteEmail: d['Website email'],
     currentEmail: d['Current email'],
     loyalServices: d['Loyal services'],
-    banner: d['Banner'],
-    bannerPrice: d['Banner price'],
+    bannerPrice: getColumnData(d['Banner price']),
     bannerNotes: d['Banner notes'],
     adminNotes: d['Admin notes'],
     clientNotes: d['User notes'],
     currency: d['Currency'],
     language: d['Language'],
     country: d['Country'],
-    homePageLink: d['Homepage link'],
-    acceptsGambling: d['Accepts gambling'],
-    acceptsForex: d['Forex'],
-    sportsBetting: d['Sports betting'],
+    banner: getBooleanColumnData(d['Banner']),
+    homePageLink: getBooleanColumnData(d['Homepage link']),
+    acceptsGambling: getBooleanColumnData(d['Accepts gambling']),
+    acceptsForex: getBooleanColumnData(d['Forex']),
+    sportsBetting: getBooleanColumnData(d['Sports betting']),
     categories: categoriesNames,
   }
 
@@ -142,40 +158,7 @@ const createNewWebsites = async (websites: any[]) => {
   for (let i = 0; i < websites.length; i++) {
     const website = websites[i]
 
-    let {
-      categories,
-      homePageLink,
-      acceptsGambling,
-      acceptsForex,
-      sportsBetting,
-      banner,
-      ...data
-    } = website
-
-    if (homePageLink) {
-      if (homePageLink.toLowerCase() === 'yes') data = { ...data, homePageLink: true }
-      else data = { ...data, homePageLink: false }
-    }
-
-    if (acceptsGambling) {
-      if (acceptsGambling.toLowerCase() === 'yes') data = { ...data, acceptsGambling: true }
-      else data = { ...data, acceptsGambling: false }
-    }
-
-    if (acceptsForex) {
-      if (acceptsForex.toLowerCase() === 'yes') data = { ...data, acceptsForex: true }
-      else data = { ...data, acceptsForex: false }
-    }
-
-    if (sportsBetting) {
-      if (sportsBetting.toLowerCase() === 'yes') data = { ...data, sportsBetting: true }
-      else data = { ...data, sportsBetting: false }
-    }
-
-    if (banner) {
-      if (banner.toLowerCase() === 'yes') data = { ...data, banner: true }
-      else data = { ...data, banner: false }
-    }
+    let { categories, ...data } = website
 
     const newWebsite = await Website.create(data)
 
@@ -191,40 +174,7 @@ const updateWebsites = async (websites: any[], existingWebsites: Website[]) => {
       (existingWebsite) => existingWebsite.domain === website.domain
     )!
 
-    let {
-      categories,
-      homePageLink,
-      acceptsGambling,
-      acceptsForex,
-      sportsBetting,
-      banner,
-      ...data
-    } = website
-
-    if (homePageLink) {
-      if (homePageLink.toLowerCase() === 'yes') data = { ...data, homePageLink: true }
-      else data = { ...data, homePageLink: false }
-    }
-
-    if (acceptsGambling) {
-      if (acceptsGambling.toLowerCase() === 'yes') data = { ...data, acceptsGambling: true }
-      else data = { ...data, acceptsGambling: false }
-    }
-
-    if (acceptsForex) {
-      if (acceptsForex.toLowerCase() === 'yes') data = { ...data, acceptsForex: true }
-      else data = { ...data, acceptsForex: false }
-    }
-
-    if (sportsBetting) {
-      if (sportsBetting.toLowerCase() === 'yes') data = { ...data, sportsBetting: true }
-      else data = { ...data, sportsBetting: false }
-    }
-
-    if (banner) {
-      if (banner.toLowerCase() === 'yes') data = { ...data, banner: true }
-      else data = { ...data, banner: false }
-    }
+    let { categories, ...data } = website
 
     await Website.query().update(data).where('id', existingWebsite.id)
 
