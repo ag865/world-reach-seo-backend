@@ -34,11 +34,13 @@ const getBooleanColumnData = (value: any) => {
 const createWebsiteObject = (d: any) => {
   if (!d['Domain']) return null
 
-  const categories = d['Categories'].toString()
-
   let categoriesNames: string[] = []
 
-  if (categories) categoriesNames = [...categories.split(',')]
+  if (d['Categories']) {
+    const categories = d['Categories'].toString()
+
+    if (categories) categoriesNames = [...categories.split(',')]
+  }
 
   const website = {
     paidGeneralPrice: getColumnData(d['Paid general price']),
