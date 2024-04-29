@@ -93,6 +93,12 @@ export default class Website extends BaseModel {
   declare sportsBetting: boolean
 
   @column()
+  declare insertionLink: boolean
+
+  @column()
+  declare insertionLinkPrice: number
+
+  @column()
   declare currency: string
 
   @column()

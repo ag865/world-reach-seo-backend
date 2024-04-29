@@ -44,6 +44,9 @@ const createWebsiteValidator = vine.compile(
     language: vine.string().trim().optional(),
     country: vine.string().trim().optional(),
 
+    insertionLink: vine.boolean().optional(),
+    insertionLinkPrice: vine.number().optional(),
+
     categories: vine.array(vine.number()).optional(),
   })
 )
@@ -86,6 +89,8 @@ const updateWebsiteValidator = (id: number) =>
       bannerPrice: vine.number().optional(),
       banner: vine.boolean().optional(),
       bannerNotes: vine.string().trim().optional(),
+      insertionLink: vine.boolean().optional(),
+      insertionLinkPrice: vine.number().optional(),
       adminNotes: vine.string().trim().optional(),
       clientNotes: vine.string().trim().optional(),
 

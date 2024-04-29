@@ -1,6 +1,7 @@
 import UserCart from '#models/UserCart'
+import Website from '#models/Website'
 import type { HttpContext } from '@adonisjs/core/http'
-import { CartObject } from '../../../utils/types.js'
+import { Cart, CartObject } from '../../../utils/types.js'
 
 export default class CartsController {
   async index({ auth, response }: HttpContext) {
@@ -8,7 +9,21 @@ export default class CartsController {
 
     const data = await UserCart.query().where('user_id', userId!).first()
 
-    return response.json(data?.cart ?? { products: [] })
+    let products: any[] = []
+
+    if (data?.cart.products.length) {
+      const ids = data?.cart.products.map((product) => product.website.id)
+
+      const websites = await Website.query().whereIn('id', ids)
+
+      data.cart.products.map((product: Cart) => {
+        const website = websites.find((website) => website.id === product.website.id)
+
+        products.push({ ...product, website })
+      })
+    }
+
+    return response.json({ products })
   }
 
   async store({ request, response, auth }: HttpContext) {

@@ -61,6 +61,8 @@ export default class WebsitesController {
         adminNotes: data.adminNotes ?? null,
         clientNotes: data.clientNotes ?? null,
         homePageLink: data.homePageLink ?? null,
+        insertionLink: data.insertionLink ?? null,
+        insertionLinkPrice: data.insertionLinkPrice ?? null,
         acceptsGambling: data.acceptsGambling ?? null,
         acceptsForex: data.acceptsForex ?? null,
         sportsBetting: data.sportsBetting ?? null,

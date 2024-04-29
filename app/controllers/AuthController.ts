@@ -1,4 +1,5 @@
 import NotFoundException from '#exceptions/NotFoundException'
+import SalesRepresentative from '#models/SalesRepresentative'
 import User from '#models/User'
 
 import { AuthServices, UserServices } from '#services/index'
@@ -59,14 +60,26 @@ export default class AuthController {
         })
     })
 
-    if (referral)
+    let email = '',
+      name = ''
+
+    if (referral) {
+      email = referral.email
+      name = `${referral.firstName} ${referral.lastName}`
+    } else {
+      const salesRep = await SalesRepresentative.query().first()
+      email = salesRep?.email ?? ''
+      name = `${salesRep?.firstName} ${salesRep?.lastName}`
+    }
+
+    if (email)
       await mail.send((message) => {
         message
-          .to(referral.email)
+          .to(email)
           .from(env.get('SMTP_USERNAME'))
           .subject('New Referral Sign up')
           .htmlView('emails/referral_sign_up', {
-            name: `${referral.firstName} ${referral.lastName}`,
+            name: `${name}`,
             clientName: `${user.firstName} ${user.lastName}`,
             clientEmail: `${user.email}`,
             url: `${env.get('ADMIN_URL')}/users`,
