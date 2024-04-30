@@ -7,7 +7,7 @@ const createWebsiteValidator = vine.compile(
       .string()
       .trim()
       .url()
-      .use(uniqueRule({ table: 'websites', column: 'domain' })),
+      .use(uniqueRule({ table: 'websites', column: 'domain', iLike: true })),
 
     paidGeneralPrice: vine.number().optional(),
     sellingGeneralPrice: vine.number().optional(),
@@ -64,7 +64,7 @@ const updateWebsiteValidator = (id: number) =>
         .string()
         .trim()
         .url()
-        .use(uniqueWhenUpdateRule({ table: 'websites', column: 'domain', id })),
+        .use(uniqueWhenUpdateRule({ table: 'websites', column: 'domain', id, iLike: true })),
 
       paidGeneralPrice: vine.number().optional(),
       sellingGeneralPrice: vine.number().optional(),

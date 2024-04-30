@@ -5,10 +5,13 @@ import { FieldContext } from '@vinejs/vine/types'
 type Options = {
   table: string
   column: string
+  iLike?: boolean
 }
 
 async function unique(value: any, options: Options, field: FieldContext) {
-  const row = await db.from(options.table).where(options.column, value).first()
+  let row = null
+  if (options.iLike) row = await db.from(options.table).whereILike(options.column, value).first()
+  else row = await db.from(options.table).where(options.column, value).first()
   if (row) field.report('The {{ field }} is already in use', 'unique', field)
 }
 
@@ -18,14 +21,24 @@ type UniqueOptions = {
   table: string
   column: string
   id: number
+  iLike?: boolean
 }
 
 async function uniqueWhenUpdate(value: any, options: UniqueOptions, field: FieldContext) {
-  const row = await db
-    .from(options.table)
-    .where(options.column, value)
-    .andWhereNot('id', options.id)
-    .first()
+  let row = null
+
+  if (options.iLike)
+    row = await db
+      .from(options.table)
+      .whereILike(options.column, value)
+      .andWhereNot('id', options.id)
+      .first()
+  else
+    row = await db
+      .from(options.table)
+      .where(options.column, value)
+      .andWhereNot('id', options.id)
+      .first()
   if (row) field.report('The {{ field }} is already in use', 'unique', field)
 }
 export const uniqueWhenUpdateRule = vine.createRule(uniqueWhenUpdate)

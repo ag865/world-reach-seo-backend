@@ -20,7 +20,7 @@ export const resetPasswordValidator = vine.compile(
       .string()
       .trim()
       .email()
-      .use(existsRule({ table: 'users', column: 'email' })),
+      .use(existsRule({ table: 'users', column: 'email', iLike: true })),
   })
 )
 resetPasswordValidator.messagesProvider = new SimpleMessagesProvider({
@@ -55,7 +55,7 @@ export const signupValidator = vine.compile(
       .string()
       .trim()
       .email()
-      .use(uniqueRule({ table: 'users', column: 'email' })),
+      .use(uniqueRule({ table: 'users', column: 'email', iLike: true })),
     password: vine
       .string()
       .trim()
@@ -86,7 +86,7 @@ export const referralSignupValidator = (id: number) =>
         .string()
         .trim()
         .email()
-        .use(uniqueWhenUpdateRule({ table: 'users', column: 'email', id })),
+        .use(uniqueWhenUpdateRule({ table: 'users', column: 'email', id, iLike: true })),
       password: vine
         .string()
         .trim()

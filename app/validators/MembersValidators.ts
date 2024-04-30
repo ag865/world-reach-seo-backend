@@ -9,7 +9,7 @@ export const updateMemberValidator = (id: number) =>
         .string()
         .trim()
         .email()
-        .use(uniqueWhenUpdateRule({ table: 'users', column: 'email', id })),
+        .use(uniqueWhenUpdateRule({ table: 'users', column: 'email', id, iLike: true })),
       avatar: vine
         .file({
           extnames: ['jpg', 'png', 'jpeg', 'webp'],
@@ -44,7 +44,7 @@ export const createMemberValidator = vine.compile(
       .string()
       .trim()
       .email()
-      .use(uniqueRule({ table: 'users', column: 'email' })),
+      .use(uniqueRule({ table: 'users', column: 'email', iLike: true })),
     avatar: vine
       .file({
         extnames: ['jpg', 'png', 'jpeg', 'webp'],

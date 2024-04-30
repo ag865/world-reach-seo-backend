@@ -19,7 +19,7 @@ export default class WebsitesController {
   async store({ request, response }: HttpContext) {
     const { categories, ...data } = await request.validateUsing(createWebsiteValidator)
 
-    const website = await Website.create(data)
+    const website = await Website.create({ ...data, domain: data.domain.toLowerCase() })
 
     if (categories) await website.related('categories').attach(categories)
 
@@ -37,7 +37,7 @@ export default class WebsitesController {
 
     await Website.query()
       .update({
-        domain: data.domain,
+        domain: data.domain.toLowerCase(),
         paidGeneralPrice: data.paidGeneralPrice ?? null,
         sellingGeneralPrice: data.sellingGeneralPrice ?? null,
         paidCasinoPrice: data.paidCasinoPrice ?? null,
