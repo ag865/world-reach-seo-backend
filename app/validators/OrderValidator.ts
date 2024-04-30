@@ -31,6 +31,11 @@ const createOrderValidator = vine.compile(
           contentPrice: vine.number(),
           mediaPrice: vine.number(),
           status: vine.string(),
+          website: vine
+            .object({
+              country: vine.string().optional(),
+            })
+            .optional(),
         })
       )
       .minLength(1),

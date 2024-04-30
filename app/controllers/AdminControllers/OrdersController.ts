@@ -1,8 +1,11 @@
 import OrderDetail from '#models/OrderDetail'
 import OrderMaster from '#models/OrderMaster'
+import User from '#models/User'
 import Ws from '#services/Ws'
 import { NotificationServices, OrderServices } from '#services/index'
+import env from '#start/env'
 import type { HttpContext } from '@adonisjs/core/http'
+import mail from '@adonisjs/mail/services/main'
 
 export default class OrdersController {
   async index({ request, response }: HttpContext) {
@@ -52,6 +55,8 @@ export default class OrdersController {
 
     await OrderDetail.query().where('id', id).update(dataToUpdate)
 
+    const user = await User.query().where('id', detail!.order!.userId).first()
+
     const notification = await NotificationServices.create(
       detail!.order.orderNumber,
       'Client',
@@ -59,6 +64,20 @@ export default class OrdersController {
       `Order media status changed from '${detail!.status}' to '${data.status}' for media '${detail!.website.domain}' .`,
       detail!.order?.userId
     )
+
+    const orderId = `${detail?.order.poNumber ?? detail?.order.orderNumber} - ${detail?.website.domain}`
+
+    await mail.send((message) => {
+      message
+        .to(user!.email)
+        .from(env.get('SMTP_USERNAME'))
+        .subject(`Update on your order - Order ID [${orderId}]`)
+        .htmlView('emails/client_order_update_email_html', {
+          name: `${user!.firstName} ${user!.lastName}`,
+          orderId,
+          status: detail?.status,
+        })
+    })
 
     Ws.io?.emit('message', notification)
 
@@ -79,6 +98,20 @@ export default class OrdersController {
       `Order status changed from '${order?.status}' to '${status}'.`,
       order?.userId
     )
+
+    const orderId = `${order?.poNumber ?? order?.orderNumber}`
+    
+    await mail.send((message) => {
+      message
+        .to(order!.user!.email)
+        .from(env.get('SMTP_USERNAME'))
+        .subject(`Update on your order - Order ID [${orderId}]`)
+        .htmlView('emails/client_order_update_email_html', {
+          name: `${order!.user!.firstName} ${order!.user!.lastName}`,
+          orderId,
+          status: order?.status,
+        })
+    })
 
     Ws.io?.emit('message', notification)
 

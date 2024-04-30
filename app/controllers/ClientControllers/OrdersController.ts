@@ -3,8 +3,11 @@ import OrderMaster from '#models/OrderMaster'
 import User from '#models/User'
 import Ws from '#services/Ws'
 import { NotificationServices, OrderServices } from '#services/index'
+import env from '#start/env'
 import { createOrderValidator } from '#validators/OrderValidator'
 import type { HttpContext } from '@adonisjs/core/http'
+import mail from '@adonisjs/mail/services/main'
+import moment from 'moment'
 
 export default class OrdersController {
   async index({ request, response, auth }: HttpContext) {
@@ -40,12 +43,38 @@ export default class OrdersController {
 
     const user = await User.query().where('id', order.userId).first()
 
+    const countries = [...new Set(details.map((obj) => obj.website!.country))]
+
     const notification = await NotificationServices.create(
       order.orderNumber,
       'Admin',
       `New Order - ${order.orderNumber}`,
       `A new order has been placed from Mr/Ms '${user!.firstName} ${user!.lastName}'.`
     )
+
+    await mail.send((message) => {
+      message
+        .to(user!.email)
+        .from(env.get('SMTP_USERNAME'))
+        .subject('Order Confirmation')
+        .htmlView('emails/client_order_place_email_html', {
+          name: `${user!.firstName} ${user!.lastName}`,
+        })
+    })
+
+    await mail.send((message) => {
+      message
+        .to('contact@worldreachseo.com')
+        .from(env.get('SMTP_USERNAME'))
+        .subject(`New Backlink Order Received - Order ID [${order.orderNumber}]`)
+        .htmlView('emails/admin_order_place_email_html', {
+          name: `${user!.firstName} ${user!.lastName}`,
+          orderId: order.id,
+          noOfLinks: details.length,
+          totalAmount: order.totalAmount.toLocaleString(),
+          countries: countries.length,
+        })
+    })
 
     Ws.io?.emit('message', notification)
 
@@ -83,6 +112,36 @@ export default class OrdersController {
       `Order Details ${detail?.detailsAdded ? 'Updated' : 'Added'} - ${detail!.order.orderNumber}`,
       `Mr/Ms '${detail!.order.user.firstName} ${detail!.order.user.lastName}' have ${detail?.detailsAdded ? 'updated' : 'added'} details for ${detail?.website.domain}.`
     )
+
+    const orderId = `${detail?.order.orderNumber} - ${detail?.website.domain}`
+
+    const changes: { label: string; value: string }[] = []
+
+    if (data.notes) changes.push({ label: 'Notes', value: data.notes })
+    if (data.anchorUrl) changes.push({ label: 'Anchor Text', value: data.anchorUrl })
+    if (data.targetUrl) changes.push({ label: 'Target URL', value: data.targetUrl })
+    if (data.dateOfPublication && data.publicationDate)
+      changes.push({
+        label: 'Date Of Publication',
+        value: moment(data.publicationDate).format('MMM DD, YYYY'),
+      })
+    if (data.articleTopic) changes.push({ label: 'Topic Article', value: data.articleTopic })
+    if (data.keywords) changes.push({ label: 'Keywords', value: data.keywords })
+    if (data.guidelines) changes.push({ label: 'Guidelines', value: data.guidelines })
+    if (data.picture) changes.push({ label: 'picture', value: data.picture ? 'YES' : 'NO' })
+
+    await mail.send((message) => {
+      message
+        .to('contact@worldreachseo.com')
+        .from(env.get('SMTP_USERNAME'))
+        .subject(`Update to Backlink Order - Order ID [${orderId}]`)
+        .htmlView('emails/admin_order_update_email_html', {
+          name: `${detail!.order!.user!.firstName} ${detail!.order!.user!.lastName}`,
+          orderId,
+          changes,
+        })
+    })
+
     Ws.io?.emit('message', notification)
 
     return response.json({ msg: 'Order updated successfully' })
