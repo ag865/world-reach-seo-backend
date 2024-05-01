@@ -1,7 +1,6 @@
 import { addWebsites } from '#services/WebsiteServices'
 import { cuid } from '@adonisjs/core/helpers'
 import { HttpContext } from '@adonisjs/core/http'
-import app from '@adonisjs/core/services/app'
 import fs from 'fs'
 import xlsx from 'xlsx'
 
@@ -48,13 +47,15 @@ export default class WebsiteMultipleUploadsController {
 
     await assembleFile(fileInfo.fileName, totalChunks, fileName)
 
-    const workbook = xlsx.readFile(app.makePath('uploads', fileName))
+    const workbook = xlsx.readFile(`./uploads/${fileName}`)
 
     let workbook_sheet = workbook.SheetNames
 
     let data: any[] = xlsx.utils.sheet_to_json(workbook.Sheets[workbook_sheet[0]])
 
     const res = await addWebsites(data)
+
+    await fs.promises.rm(`./uploads/${fileName}`)
 
     return response.status(200).json({ msg: 'Websites imported successfully', res })
   }
