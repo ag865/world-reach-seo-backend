@@ -120,7 +120,7 @@ const manageCategories = async (categories: string[]) => {
 }
 
 const getExistingCategories = async (categoryNames: string[]) => {
-  const categories = await Category.query().where((builder) => {
+  return await Category.query().where((builder) => {
     categoryNames.forEach((category, index) => {
       if (index === 0) {
         builder.whereRaw('name ILIKE ?', [`${category}`])
@@ -129,7 +129,6 @@ const getExistingCategories = async (categoryNames: string[]) => {
       }
     })
   })
-  return categories
 }
 
 const createNewCategories = async (categoryNames: string[]) => {
@@ -145,12 +144,11 @@ const createNewCategories = async (categoryNames: string[]) => {
 
 const getSiteObjects = (categoryObjects: Category[], websites: any[]) => {
   const sitesToCreate: any[] = []
-
   websites.map((website: any) => {
     const websiteCategoryIds: number[] = []
     if (website.categories) {
       website.categories.map((category: string) => {
-        const id = categoryObjects.find((a) => a.name === category)!.id
+        const id = categoryObjects.find((a) => a.name.toLowerCase() === category.toLowerCase())!.id
         websiteCategoryIds.push(id)
       })
     }
