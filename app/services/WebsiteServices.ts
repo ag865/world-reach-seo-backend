@@ -21,13 +21,25 @@ const addWebsites = async (data: any[]) => {
 
 const getColumnData = (value: any) => {
   if (!value) return null
-  const number = parseFloat(value)
+
+  let numberString = ''
+
+  if (typeof value === 'string') numberString = value.trim()
+  else numberString = `${value}`
+
+  const number = parseFloat(numberString)
+
   return isNaN(number) ? null : number
+}
+
+const getColumnStringData = (value: any) => {
+  if (!value) return null
+  return value.toString().trim()
 }
 
 const getBooleanColumnData = (value: any) => {
   if (!value) return false
-  if (value.toString().toLowerCase() === 'yes') return true
+  if (value.toString().trim().toLowerCase() === 'yes') return true
   return false
 }
 
@@ -39,7 +51,10 @@ const createWebsiteObject = (d: any) => {
   if (d['Categories']) {
     const categories = d['Categories'].toString()
 
-    if (categories) categoriesNames = [...categories.split(',')]
+    if (categories)
+      categoriesNames = categories.split(',').map((value: string) => {
+        if (value) return value.trim()
+      })
   }
 
   const website = {
@@ -52,24 +67,24 @@ const createWebsiteObject = (d: any) => {
     paidForexPrice: getColumnData(d['Paid forex price']),
     sellingForexPrice: getColumnData(d['Selling forex price']),
     homepageLinkPrice: getColumnData(d['Homepage link price']),
-    homepageLinkNotes: d['Homepage link notes'],
+    bannerPrice: getColumnData(d['Banner price']),
+    insertionLinkPrice: getColumnData(d['Insertion link price']),
     mozDA: getColumnData(d['Moz (DA)']),
     aHrefsDR: getColumnData(d['Ahrefs - DR']),
     organicTraffic: getColumnData(d['Organic traffic']),
     spamScore: getColumnData(d['Spam score']),
     trustFlow: getColumnData(d['Trust flow']),
-    domain: d['Domain'].toLowerCase(),
-    websiteEmail: d['Website email'],
-    currentEmail: d['Current email'],
-    loyalServices: d['Loyal services'],
-    bannerPrice: getColumnData(d['Banner price']),
-    insertionLinkPrice: getColumnData(d['Insertion link price']),
-    bannerNotes: d['Banner notes'],
-    adminNotes: d['Admin notes'],
-    clientNotes: d['User notes'],
-    currency: d['Currency'],
-    language: d['Language'],
-    country: d['Country'],
+    domain: d['Domain'].trim().toLowerCase(),
+    homepageLinkNotes: getColumnStringData(d['Homepage link notes']),
+    websiteEmail: getColumnStringData(d['Website email']),
+    currentEmail: getColumnStringData(d['Current email']),
+    loyalServices: getColumnStringData(d['Loyal services']),
+    bannerNotes: getColumnStringData(d['Banner notes']),
+    adminNotes: getColumnStringData(d['Admin notes']),
+    clientNotes: getColumnStringData(d['User notes']),
+    currency: getColumnStringData(d['Currency']),
+    language: getColumnStringData(d['Language']),
+    country: getColumnStringData(d['Country']),
     banner: getBooleanColumnData(d['Banner']),
     homePageLink: getBooleanColumnData(d['Homepage link']),
     insertionLink: getBooleanColumnData(d['Insertion link']),
@@ -93,7 +108,9 @@ const manageCategories = async (categories: string[]) => {
   const categoriesToCreate: string[] = []
 
   uniqueCategories.map((category) => {
-    const categoryObject = categoryObjects.find((obj) => obj.name === category)
+    const categoryObject = categoryObjects.find(
+      (obj) => obj.name.toLowerCase() === category.toLowerCase()
+    )
     if (!categoryObject) categoriesToCreate.push(category)
   })
 
@@ -103,7 +120,16 @@ const manageCategories = async (categories: string[]) => {
 }
 
 const getExistingCategories = async (categoryNames: string[]) => {
-  return await Category.query().where('name', 'IN', categoryNames)
+  const categories = await Category.query().where((builder) => {
+    categoryNames.forEach((category, index) => {
+      if (index === 0) {
+        builder.whereRaw('name ILIKE ?', [`${category}`])
+      } else {
+        builder.orWhereRaw('name ILIKE ?', [`${category}`])
+      }
+    })
+  })
+  return categories
 }
 
 const createNewCategories = async (categoryNames: string[]) => {
