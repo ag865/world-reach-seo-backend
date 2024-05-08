@@ -1,6 +1,7 @@
 import Category from '#models/Category'
 import Website from '#models/Website'
 import string from '@adonisjs/core/helpers/string'
+import { getUniqueByKey } from '../../utils/helpers.js'
 
 const addWebsites = async (data: any[]) => {
   const websites: any[] = []
@@ -16,7 +17,9 @@ const addWebsites = async (data: any[]) => {
 
   const categoryObjects = await manageCategories(categories)
 
-  await createWebsites(getSiteObjects(categoryObjects, websites))
+  const uniqueWebsites = getUniqueByKey(websites, 'domain')
+
+  await createWebsites(getSiteObjects(categoryObjects, uniqueWebsites))
 }
 
 const getColumnData = (value: any) => {

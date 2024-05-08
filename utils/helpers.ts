@@ -7,4 +7,15 @@ const generateRandomOrderNumber = () => {
   }
   return result
 }
-export { generateRandomOrderNumber }
+
+function getUniqueByKey(array: any[], key: string) {
+  return Object.values(
+    array.reduce((uniqueMap, obj) => {
+      if (!uniqueMap[obj[key]]) {
+        uniqueMap[obj[key]] = obj
+      }
+      return uniqueMap
+    }, {})
+  )
+}
+export { generateRandomOrderNumber, getUniqueByKey }
