@@ -37,8 +37,8 @@ const csvHeaders = [
   'Last updated',
   'Banner notes',
   'Homepage link notes',
-  'Admin Notes',
-  'User Notes',
+  'Admin notes',
+  'User notes',
 ]
 
 export default class WebsiteExportController {
