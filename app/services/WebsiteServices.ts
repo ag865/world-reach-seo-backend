@@ -32,7 +32,7 @@ const getColumnData = (value: any) => {
 
   const number = parseFloat(numberString)
 
-  return isNaN(number) ? null : number
+  return isNaN(number) ? null : parseFloat(number.toFixed(2))
 }
 
 const getColumnStringData = (value: any) => {
@@ -54,8 +54,12 @@ const createWebsiteObject = (d: any) => {
   if (d['Categories']) {
     const categories = d['Categories'].toString()
 
-    if (categories)
+    if (categories.includes(','))
       categoriesNames = categories.split(',').map((value: string) => {
+        if (value) return value.trim()
+      })
+    else if (categories.includes('|'))
+      categoriesNames = categories.split('|').map((value: string) => {
         if (value) return value.trim()
       })
   }
@@ -290,9 +294,15 @@ const getWebsites = async (params: any, paginate = true, getCount = false) => {
 
   if (organicTrafficMax) query.andWhere('organic_traffic', '<=', organicTrafficMax)
 
-  if (priceMin) query.andWhere('selling_general_price', '>=', priceMin)
+  if (homePageLink === 'Yes') {
+    if (priceMin) query.andWhere('homepage_link_price', '>=', priceMin)
 
-  if (priceMax) query.andWhere('selling_general_price', '<=', priceMax)
+    if (priceMax) query.andWhere('homepage_link_price', '<=', priceMax)
+  } else {
+    if (priceMin) query.andWhere('selling_general_price', '>=', priceMin)
+
+    if (priceMax) query.andWhere('selling_general_price', '<=', priceMax)
+  }
 
   if (homePageLink && homePageLink !== 'None')
     query.andWhere('home_page_link', homePageLink.toLowerCase())
