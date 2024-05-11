@@ -112,6 +112,6 @@ export default class WebsiteExportController {
 
     response.header('Content-Type', 'text/csv; charset=utf-8')
 
-    return response.send(csvContent)
+    return response.send('\uFEFF' + csvContent)
   }
 }
