@@ -1,5 +1,6 @@
 import OrderDetail from '#models/OrderDetail'
 import OrderMaster from '#models/OrderMaster'
+import SalesRepresentative from '#models/SalesRepresentative'
 import User from '#models/User'
 import Ws from '#services/Ws'
 import { NotificationServices, OrderServices } from '#services/index'
@@ -75,6 +76,23 @@ export default class OrdersController {
           countries: countries.length,
         })
     })
+
+    const salesRep = await SalesRepresentative.query().first()
+
+    if (salesRep && salesRep.email)
+      await mail.send((message) => {
+        message
+          .to(salesRep.email)
+          .from(env.get('SMTP_USERNAME'))
+          .subject(`New Backlink Order Received - Order ID [${order.orderNumber}]`)
+          .htmlView('emails/admin_order_place_email_html', {
+            name: `${user!.firstName} ${user!.lastName}`,
+            orderId: order.id,
+            noOfLinks: details.length,
+            totalAmount: order.totalAmount.toLocaleString(),
+            countries: countries.length,
+          })
+      })
 
     Ws.io?.emit('message', notification)
 
