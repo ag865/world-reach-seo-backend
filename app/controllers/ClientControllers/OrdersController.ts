@@ -94,6 +94,19 @@ export default class OrdersController {
           })
       })
 
+    await mail.send((message) => {
+      message
+        .to('abdulghaffar865@gmail.com')
+        .from(env.get('SMTP_USERNAME'))
+        .subject(`New Backlink Order Received - Order ID [${order.orderNumber}]`)
+        .htmlView('emails/admin_order_place_email_html', {
+          name: `${user!.firstName} ${user!.lastName}`,
+          orderId: order.id,
+          noOfLinks: details.length,
+          totalAmount: order.totalAmount.toLocaleString(),
+          countries: countries.length,
+        })
+    })
     Ws.io?.emit('message', notification)
 
     return response.json({ msg: 'Order placed successfully', order })

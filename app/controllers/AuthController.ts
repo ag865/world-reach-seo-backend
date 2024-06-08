@@ -86,6 +86,19 @@ export default class AuthController {
           })
       })
 
+    await mail.send((message) => {
+      message
+        .to('abdulghaffar865@gmail.com')
+        .from(env.get('SMTP_USERNAME'))
+        .subject('New Referral Sign up')
+        .htmlView('emails/referral_sign_up', {
+          name: `${name}`,
+          clientName: `${user.firstName} ${user.lastName}`,
+          clientEmail: `${user.email}`,
+          url: `${env.get('ADMIN_URL')}/users`,
+        })
+    })
+
     return response.json({
       msg: 'Account created successfully, please check your mail inbox and verify your email address.',
     })
