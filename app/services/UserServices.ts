@@ -45,4 +45,13 @@ const getUsers = async (
   return await query.paginate(page, limit)
 }
 
-export { create, destroy, getUserByValue, getUsers, update }
+const getClients = async (ids: number[]) => {
+  const query = User.query().where('is_admin', false)
+
+  if (ids.length) query.andWhereIn('id', ids)
+
+  const users = await query
+  return users
+}
+
+export { create, destroy, getClients, getUserByValue, getUsers, update }

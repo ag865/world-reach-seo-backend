@@ -7,6 +7,7 @@
 |
 */
 import ImageController from '#controllers/ImageController'
+
 import router from '@adonisjs/core/services/router'
 
 import './Routes/AdminRoutes.js'
