@@ -1,4 +1,5 @@
 import CategoriesController from '#controllers/AdminControllers/CategoriesController'
+import CouponsController from '#controllers/AdminControllers/CouponsController'
 import DashboardController from '#controllers/AdminControllers/DashboardController'
 import MemberController from '#controllers/AdminControllers/MemberController'
 import OrdersController from '#controllers/AdminControllers/OrdersController'
@@ -70,6 +71,11 @@ router
         router.get('/unread', [NotificationsController, 'getUnreadNotifications'])
       })
       .prefix('notification')
+
+    router
+      .resource('coupons', CouponsController)
+      .apiOnly()
+      .only(['destroy', 'index', 'store', 'update'])
   })
   .prefix('/api/admin')
   .use([middleware.auth({ guards: ['api'] }), middleware.isAdmin()])

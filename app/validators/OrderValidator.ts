@@ -14,6 +14,11 @@ const createOrderValidator = vine.compile(
     billingAddressCountry: vine.string().trim().optional(),
     paymentMethod: vine.string().trim(),
     totalAmount: vine.number(),
+    discountAmount: vine.number().optional(),
+    netAmount: vine.number().optional(),
+    discountType: vine.string().optional(),
+    discountValue: vine.number().optional(),
+    couponId: vine.number().optional(),
     details: vine
       .array(
         vine.object({

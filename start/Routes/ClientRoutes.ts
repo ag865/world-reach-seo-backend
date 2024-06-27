@@ -3,6 +3,7 @@ import AuthController from '#controllers/AuthController'
 import BillingAddressController from '#controllers/ClientControllers/BillingAddressController'
 import CartsController from '#controllers/ClientControllers/CartController'
 import CategoryController from '#controllers/ClientControllers/CategoryController'
+import CouponController from '#controllers/ClientControllers/CouponController'
 import NotificationsController from '#controllers/ClientControllers/NotificationsController'
 import OrdersController from '#controllers/ClientControllers/OrdersController'
 import PaypalController from '#controllers/ClientControllers/PaypalController'
@@ -53,6 +54,8 @@ router
         router.get('/unread', [NotificationsController, 'getUnreadNotifications'])
       })
       .prefix('notification')
+
+    router.get('coupon/:code', [CouponController])
   })
   .prefix('/api/user')
   .use([middleware.auth({ guards: ['api'] }), middleware.isClient()])

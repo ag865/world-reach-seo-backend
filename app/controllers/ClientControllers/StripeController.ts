@@ -16,8 +16,10 @@ export default class StripesController {
     })
   }
 
-  async store({ response, auth }: HttpContext) {
+  async store({ response, auth, request }: HttpContext) {
     const userId = auth.user?.id!
+
+    const { discountAmount } = request.body()
 
     const cart = await UserCart.query().where('userId', userId).first()
 
@@ -38,12 +40,24 @@ export default class StripesController {
       lineItems.push({ price: stripePrice.id, quantity: 1 })
     }
 
-    const session = await stripe.checkout.sessions.create({
+    let stripeObject: any = {
       ui_mode: 'embedded',
       line_items: lineItems,
       mode: 'payment',
       return_url: `${env.get('CLIENT_URL')}/cart/checkout?session_id={CHECKOUT_SESSION_ID}`,
-    })
+    }
+
+    if (discountAmount) {
+      const coupon = await stripe.coupons.create({
+        amount_off: discountAmount * 100,
+        duration: 'once',
+        currency: 'USD',
+      })
+
+      stripeObject = { ...stripeObject, discounts: [{ coupon: coupon.id }] }
+    }
+
+    const session = await stripe.checkout.sessions.create(stripeObject)
     return response.json({ clientSecret: session.client_secret })
   }
 }
