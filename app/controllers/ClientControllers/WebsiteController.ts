@@ -18,7 +18,7 @@ export default class WebsitesController {
       params = { ...params, country: countries }
     }
 
-    const data = await getWebsites(params, true, false)
+    const data = await getWebsites(params, true, false, false)
 
     return response.json(data)
   }
@@ -38,7 +38,7 @@ export default class WebsitesController {
       params = { ...params, country: countries }
     }
 
-    const data = await getWebsites(params, true, true)
+    const data = await getWebsites(params, true, true, true)
 
     return response.json({ count: data[0].$extras.count })
   }

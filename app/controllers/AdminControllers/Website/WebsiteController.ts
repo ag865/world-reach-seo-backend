@@ -69,6 +69,7 @@ export default class WebsitesController {
         currency: data.currency ?? null,
         language: data.language ?? null,
         country: data.country ?? null,
+        hide: data.hide ?? null,
       })
       .where('id', id)
 

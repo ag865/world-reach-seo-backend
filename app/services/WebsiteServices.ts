@@ -98,6 +98,7 @@ const createWebsiteObject = (d: any) => {
     acceptsGambling: getBooleanColumnData(d['Accepts gambling']),
     acceptsForex: getBooleanColumnData(d['Forex']),
     sportsBetting: getBooleanColumnData(d['Sports betting']),
+    hide: getBooleanColumnData(d['Hide']),
     categories: categoriesNames,
   }
 
@@ -115,10 +116,11 @@ const manageCategories = async (categories: string[]) => {
   const categoriesToCreate: string[] = []
 
   uniqueCategories.map((category) => {
-    const categoryObject = categoryObjects.find(
-      (obj) => obj.name.toLowerCase() === category.toLowerCase()
-    )
-    if (!categoryObject) categoriesToCreate.push(category)
+    if (category) {
+      const slug = string.slug(category)
+      const categoryObject = categoryObjects.find((obj) => obj.slug === slug)
+      if (!categoryObject) categoriesToCreate.push(category)
+    }
   })
 
   const newCategories = await createNewCategories(categoriesToCreate)
@@ -129,10 +131,13 @@ const manageCategories = async (categories: string[]) => {
 const getExistingCategories = async (categoryNames: string[]) => {
   return await Category.query().where((builder) => {
     categoryNames.forEach((category, index) => {
-      if (index === 0) {
-        builder.whereRaw('name ILIKE ?', [`${category}`])
-      } else {
-        builder.orWhereRaw('name ILIKE ?', [`${category}`])
+      if (category) {
+        const slug = string.slug(category)
+        if (index === 0) {
+          builder.whereRaw('slug ILIKE ?', [`${slug}`])
+        } else {
+          builder.orWhereRaw('slug ILIKE ?', [`${slug}`])
+        }
       }
     })
   })
@@ -155,8 +160,11 @@ const getSiteObjects = (categoryObjects: Category[], websites: any[]) => {
     const websiteCategoryIds: number[] = []
     if (website.categories) {
       website.categories.map((category: string) => {
-        const id = categoryObjects.find((a) => a.name.toLowerCase() === category.toLowerCase())!.id
-        websiteCategoryIds.push(id)
+        if (category) {
+          const slug = string.slug(category)
+          const id = categoryObjects.find((a) => a.slug === slug)!.id
+          websiteCategoryIds.push(id)
+        }
       })
     }
     sitesToCreate.push({ ...website, categories: websiteCategoryIds })
@@ -217,7 +225,7 @@ const updateWebsites = async (websites: any[], existingWebsites: Website[]) => {
   }
 }
 
-const getWebsites = async (params: any, paginate = true, getCount = false) => {
+const getWebsites = async (params: any, paginate = true, getCount = false, getHidden = true) => {
   const {
     page = 1,
     limit = 10,
@@ -246,6 +254,8 @@ const getWebsites = async (params: any, paginate = true, getCount = false) => {
   const query = Website.query()
 
   if (!getCount) query.preload('categories')
+
+  if (!getHidden) query.where('hide', false)
 
   if (search) query.andWhereILike('domain', `%${search}%`)
 

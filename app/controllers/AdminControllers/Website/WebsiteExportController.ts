@@ -39,6 +39,7 @@ const csvHeaders = [
   'Homepage link notes',
   'Admin notes',
   'User notes',
+  'Hide',
 ]
 
 export default class WebsiteExportController {
@@ -101,6 +102,7 @@ export default class WebsiteExportController {
         d.homepageLinkNotes ? d.homepageLinkNotes?.replace(/,/g, ';').toString() : '',
         d.adminNotes ? d.adminNotes?.replace(/,/g, ';').toString() : '',
         d.clientNotes ? d.clientNotes?.replace(/,/g, ';').toString() : '',
+        d.hide ? 'YES' : 'NO',
       ])
     })
 

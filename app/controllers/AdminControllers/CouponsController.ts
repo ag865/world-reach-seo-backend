@@ -1,11 +1,7 @@
 import NotFoundException from '#exceptions/NotFoundException'
-import { getClients } from '#services/UserServices'
 import { CouponServices } from '#services/index'
-import env from '#start/env'
 import { createCouponValidator, updateCouponValidator } from '#validators/CouponValidator'
 import type { HttpContext } from '@adonisjs/core/http'
-import mail from '@adonisjs/mail/services/main'
-import moment from 'moment'
 
 export default class CouponsController {
   async index({ request, response }: HttpContext) {
@@ -21,24 +17,24 @@ export default class CouponsController {
 
     await CouponServices.createCoupon(data, users ?? [])
 
-    const clients = await getClients(users ?? [])
+    // const clients = await getClients(users ?? [])
 
-    for (let i = 0; i < clients.length; i++)
-      await mail.sendLater((message) => {
-        message
-          .to(clients[i].email)
-          .from(env.get('SMTP_USERNAME'))
-          .subject('Verify your email address')
-          .htmlView('emails/coupon_email_html', {
-            name: `${clients[i].firstName} ${clients[i].lastName}`,
-            couponCode: data.couponCode,
-            discount: data.type === 'Percentage' ? `${data.value}%` : `$${data.value}`,
-            discountText:
-              data.startDate !== data.endDate
-                ? `from ${moment(data.startDate).format('MMM DD')} to ${moment(data.endDate).format('MMM DD')} `
-                : `on ${moment(data.startDate).format('MMM DD, YYYY')}`,
-          })
-      })
+    // for (let i = 0; i < clients.length; i++)
+    //   await mail.sendLater((message) => {
+    //     message
+    //       .to(clients[i].email)
+    //       .from(env.get('SMTP_USERNAME'))
+    //       .subject('Verify your email address')
+    //       .htmlView('emails/coupon_email_html', {
+    //         name: `${clients[i].firstName} ${clients[i].lastName}`,
+    //         couponCode: data.couponCode,
+    //         discount: data.type === 'Percentage' ? `${data.value}%` : `$${data.value}`,
+    //         discountText:
+    //           data.startDate !== data.endDate
+    //             ? `from ${moment(data.startDate).format('MMM DD')} to ${moment(data.endDate).format('MMM DD')} `
+    //             : `on ${moment(data.startDate).format('MMM DD, YYYY')}`,
+    //       })
+    //   })
 
     return response.json({ msg: 'Coupon created successfully' })
   }

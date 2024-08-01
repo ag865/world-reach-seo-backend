@@ -107,6 +107,9 @@ export default class Website extends BaseModel {
   @column()
   declare country: string
 
+  @column()
+  declare hide: boolean
+
   @manyToMany(() => Category, {
     localKey: 'id',
     relatedKey: 'id',

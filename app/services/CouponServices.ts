@@ -21,7 +21,7 @@ const createCoupon = async (data: any, users: number[]) => {
 const updateCoupon = async (data: any, users: number[], id: number, obj: Coupon) => {
   await Coupon.query().update(data).where('id', id)
 
-  if (users.length) await obj.related('users').sync(users)
+  await obj.related('users').sync(users ?? [])
 }
 
 const getCouponByValue = async (column: string, value: any, includeUsers = false) => {
