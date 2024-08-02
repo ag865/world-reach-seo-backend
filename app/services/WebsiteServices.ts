@@ -118,7 +118,9 @@ const manageCategories = async (categories: string[]) => {
   uniqueCategories.map((category) => {
     if (category) {
       const slug = string.slug(category)
-      const categoryObject = categoryObjects.find((obj) => obj.slug === slug)
+      const categoryObject = categoryObjects.find(
+        (obj) => obj.slug.toLowerCase() === slug.toLowerCase()
+      )
       if (!categoryObject) categoriesToCreate.push(category)
     }
   })
@@ -144,11 +146,17 @@ const getExistingCategories = async (categoryNames: string[]) => {
 }
 
 const createNewCategories = async (categoryNames: string[]) => {
+  // categoryNames.map(async (name) => {
+  //   const slug = string.slug(name)
+  //   console.log({ name, slug })
+  //   await Category.create({ name, slug })
+  // })
   return await Category.createMany(
-    categoryNames.map((category) => {
+    categoryNames.map((name) => {
+      const slug = string.slug(name)
       return {
-        name: category,
-        slug: string.slug(category),
+        name,
+        slug,
       }
     })
   )
@@ -162,8 +170,8 @@ const getSiteObjects = (categoryObjects: Category[], websites: any[]) => {
       website.categories.map((category: string) => {
         if (category) {
           const slug = string.slug(category)
-          const id = categoryObjects.find((a) => a.slug === slug)!.id
-          websiteCategoryIds.push(id)
+          const id = categoryObjects.find((a) => a.slug === slug)?.id
+          if (id) websiteCategoryIds.push(id)
         }
       })
     }

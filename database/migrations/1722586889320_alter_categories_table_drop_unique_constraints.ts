@@ -1,11 +1,12 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
 
 export default class extends BaseSchema {
-  protected tableName = 'websites'
+  protected tableName = 'categories'
 
   async up() {
     this.schema.alterTable(this.tableName, (table) => {
-      table.boolean('hide').defaultTo(false)
+      table.dropUnique(['name'])
+      table.dropUnique(['slug'])
     })
   }
   async down() {}
