@@ -3,6 +3,7 @@ import Website from '#models/Website'
 import { getWebsites } from '#services/WebsiteServices'
 import { createWebsiteValidator, updateWebsiteValidator } from '#validators/WebsiteValidator'
 import type { HttpContext } from '@adonisjs/core/http'
+import { DateTime } from 'luxon'
 
 export default class WebsitesController {
   /**
@@ -19,7 +20,12 @@ export default class WebsitesController {
   async store({ request, response }: HttpContext) {
     const { categories, ...data } = await request.validateUsing(createWebsiteValidator)
 
-    const website = await Website.create({ ...data, domain: data.domain.toLowerCase() })
+    const website = await Website.create({
+      ...data,
+      domain: data.domain.toLowerCase(),
+      uploadDate: data.uploadDate ? DateTime.fromJSDate(data.uploadDate) : undefined,
+      lastUpdated: data.lastUpdated ? DateTime.fromJSDate(data.lastUpdated) : undefined,
+    })
 
     if (categories) await website.related('categories').attach(categories)
 
@@ -70,6 +76,8 @@ export default class WebsitesController {
         language: data.language ?? null,
         country: data.country ?? null,
         hide: data.hide ?? null,
+        uploadDate: data.uploadDate ? DateTime.fromJSDate(data.uploadDate) : undefined,
+        lastUpdated: data.lastUpdated ? DateTime.fromJSDate(data.lastUpdated) : undefined,
       })
       .where('id', id)
 

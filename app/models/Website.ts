@@ -110,6 +110,12 @@ export default class Website extends BaseModel {
   @column()
   declare hide: boolean
 
+  @column.dateTime()
+  declare uploadDate?: DateTime
+
+  @column.dateTime()
+  declare lastUpdated?: DateTime
+
   @manyToMany(() => Category, {
     localKey: 'id',
     relatedKey: 'id',

@@ -1,6 +1,7 @@
 import Category from '#models/Category'
 import Website from '#models/Website'
 import string from '@adonisjs/core/helpers/string'
+import moment from 'moment'
 import { getUniqueByKey } from '../../utils/helpers.js'
 
 const addWebsites = async (data: any[]) => {
@@ -38,6 +39,13 @@ const getColumnData = (value: any) => {
 const getColumnStringData = (value: any) => {
   if (!value) return null
   return value.toString().trim()
+}
+
+const getColumnDateData = (value: any) => {
+  if (!value) return null
+  value = value.toString().trim()
+
+  return moment(value, 'MM.DD.YYYY').toISOString()
 }
 
 const getBooleanColumnData = (value: any) => {
@@ -99,9 +107,11 @@ const createWebsiteObject = (d: any) => {
     acceptsForex: getBooleanColumnData(d['Forex']),
     sportsBetting: getBooleanColumnData(d['Sports betting']),
     hide: getBooleanColumnData(d['Hide']),
+    uploadDate: getColumnDateData(d['Upload date']),
+    lastUpdated: getColumnDateData(d['Last updated']),
     categories: categoriesNames,
   }
-
+  console.log(website)
   return {
     categoriesNames,
     website,

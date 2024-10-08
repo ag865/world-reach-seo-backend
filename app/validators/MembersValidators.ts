@@ -80,6 +80,12 @@ export const updateUserValidator = vine.compile(
       })
       .optional(),
     countries: vine.array(vine.string()).optional(),
+    password: vine
+      .string()
+      .trim()
+      .minLength(8)
+      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/)
+      .optional(),
   })
 )
 

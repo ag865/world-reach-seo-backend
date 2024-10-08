@@ -15,7 +15,8 @@ export default class UserController {
   async update({ request, response, params }: HttpContext) {
     const id = params.id as number
 
-    let { avatar, countries, ...requestData } = await request.validateUsing(updateUserValidator)
+    let { avatar, countries, password, ...requestData } =
+      await request.validateUsing(updateUserValidator)
 
     const user = await UserServices.getUserByValue('id', id)
 
@@ -27,6 +28,11 @@ export default class UserController {
       const fileName = `${cuid()}.${avatar.clientName}`
       await avatar.move(app.makePath('uploads'), { name: fileName })
       data = { ...data, avatar: fileName }
+    }
+
+    if (password) {
+      const hashedPassword = await hash.make(password)
+      data = { ...data, password: hashedPassword }
     }
 
     await UserServices.update(data, 'id', id)

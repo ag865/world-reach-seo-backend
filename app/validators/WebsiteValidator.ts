@@ -47,6 +47,8 @@ const createWebsiteValidator = vine.compile(
     insertionLink: vine.boolean().optional(),
     insertionLinkPrice: vine.number().optional(),
     hide: vine.boolean().optional(),
+    uploadDate: vine.date().optional(),
+    lastUpdated: vine.date().optional(),
 
     categories: vine.array(vine.number()).optional(),
   })
@@ -104,6 +106,9 @@ const updateWebsiteValidator = (id: number) =>
       language: vine.string().trim().optional(),
       country: vine.string().trim().optional(),
       hide: vine.boolean().optional(),
+
+      uploadDate: vine.date().optional(),
+      lastUpdated: vine.date().optional(),
 
       categories: vine.array(vine.number()).optional(),
     })

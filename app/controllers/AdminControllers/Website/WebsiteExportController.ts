@@ -61,12 +61,17 @@ export default class WebsiteExportController {
 
     data.map((d: Website) => {
       let categories = ''
+
       if (d.categories.length) {
         d.categories.map((c: Category, index: number) => {
-          if (index === d.categories.length - 1) categories += c.name
-          else categories += c.name + '| '
+          if (index === d.categories.length - 1) {
+            categories += c.name
+          } else {
+            categories += c.name + '| '
+          }
         })
       }
+
       csvData.push([
         d.paidGeneralPrice ? d.paidGeneralPrice?.toString() : '',
         d.paidCasinoPrice ? d.paidCasinoPrice?.toString() : '',
@@ -96,8 +101,8 @@ export default class WebsiteExportController {
         d.insertionLink ? 'Yes' : 'No',
         d.insertionLinkPrice ? d.insertionLinkPrice?.toString() : '',
         d.websiteEmail ? d.websiteEmail?.toString() : '',
-        d.createdAt ? moment(d.createdAt).format('MM.DD.YYYY') : '',
-        d.updatedAt ? moment(d.updatedAt).format('MM.DD.YYYY') : '',
+        d.uploadDate ? d.uploadDate.toFormat('MM.dd.yyyy') : d.createdAt.toFormat('MM.dd.yyyy'),
+        d.lastUpdated ? d.lastUpdated.toFormat('MM.dd.yyyy') : d.createdAt.toFormat('MM.dd.yyyy'),
         d.bannerNotes ? d.bannerNotes?.replace(/,/g, ';').toString() : '',
         d.homepageLinkNotes ? d.homepageLinkNotes?.replace(/,/g, ';').toString() : '',
         d.adminNotes ? d.adminNotes?.replace(/,/g, ';').toString() : '',
