@@ -43,14 +43,26 @@ const getColumnStringData = (value: any) => {
 
 const getColumnDateData = (value: any) => {
   if (!value) return null
-  value = value.toString().trim()
 
-  return moment(value, 'MM.DD.YYYY').toISOString()
+  if (typeof value === 'number') {
+    return new Date(1900, 0, value - 1).toISOString()
+  }
+
+  const dateString = value.toString().trim()
+  value = moment(dateString, 'MM/DD/YYYY').toISOString()
+
+  if (value === null) {
+    value = moment(dateString, 'DD/MM/YYYY').toISOString()
+  }
+
+  return value
 }
 
 const getBooleanColumnData = (value: any) => {
   if (!value) return false
+
   if (value.toString().trim().toLowerCase() === 'yes') return true
+
   return false
 }
 
@@ -111,7 +123,7 @@ const createWebsiteObject = (d: any) => {
     lastUpdated: getColumnDateData(d['Last updated']),
     categories: categoriesNames,
   }
-  console.log(website)
+
   return {
     categoriesNames,
     website,

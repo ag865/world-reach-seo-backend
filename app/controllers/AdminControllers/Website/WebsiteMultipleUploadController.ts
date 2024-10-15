@@ -53,6 +53,12 @@ export default class WebsiteMultipleUploadsController {
 
     let data: any[] = xlsx.utils.sheet_to_json(workbook.Sheets[workbook_sheet[0]])
 
+    data.forEach((row) => {
+      if (row.yourDateColumn instanceof Date) {
+        row.yourDateColumn = row.yourDateColumn.toLocaleDateString('en-US')
+      }
+    })
+
     const res = await addWebsites(data)
 
     await fs.promises.rm(`./uploads/${fileName}`)
