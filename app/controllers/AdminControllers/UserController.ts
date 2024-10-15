@@ -85,6 +85,29 @@ export default class UserController {
     return response.json({ msg: 'User deactivated successfully!' })
   }
 
+  async resendVerificationEmail({ response, params }: HttpContext) {
+    const id = params.id as number
+
+    const user = await UserServices.getUserByValue('id', id)
+
+    if (!user || user.isAdmin) throw new NotFoundException('id', 'User doest not exist')
+
+    await mail.send((message) => {
+      message
+        .to(user.email)
+        .from(env.get('SMTP_USERNAME'))
+        .subject('Verify your email address')
+        .htmlView('emails/verify_email_html', {
+          url: `${env.get('CLIENT_URL')}/auth/verify/${user.referralKey}`,
+          name: `${user.firstName} ${user.lastName}`,
+          clientURL: env.get('CLIENT_URL'),
+        })
+    })
+    console.log('Email sent successfully')
+
+    return response.json({ msg: 'Verification Email Sent Successfully!' })
+  }
+
   async get({ response, request }: HttpContext) {
     const {
       page,

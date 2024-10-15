@@ -26,6 +26,7 @@ router
 
     router
       .group(() => {
+        router.post('/resend-verification-email/:id', [UserController, 'resendVerificationEmail'])
         router.put('activate/:id', [UserController, 'activate'])
         router.put('de-activate/:id', [UserController, 'deActivate'])
         router.put('/:id', [UserController, 'update'])
