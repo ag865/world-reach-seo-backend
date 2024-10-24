@@ -23,7 +23,7 @@ export default class CouponsController {
     //   await mail.sendLater((message) => {
     //     message
     //       .to(clients[i].email)
-    //       .from(env.get('SMTP_USERNAME'))
+    //       .from(env.get('SMTP_FROM_EMAIL'))
     //       .subject('Verify your email address')
     //       .htmlView('emails/coupon_email_html', {
     //         name: `${clients[i].firstName} ${clients[i].lastName}`,

@@ -69,8 +69,9 @@ export default class OrdersController {
 
     await mail.send((message) => {
       message
-        .to(user!.email)
-        .from(env.get('SMTP_USERNAME'))
+        .to(user!.email, `${user!.firstName} ${user!.lastName}`)
+        .from(env.get('SMTP_FROM_EMAIL'), 'World Reach Seo')
+        .cc(user!.email)
         .subject(`Update on your order - Order ID [${orderId}]`)
         .htmlView('emails/client_order_update_email_html', {
           name: `${user!.firstName} ${user!.lastName}`,
@@ -100,11 +101,12 @@ export default class OrdersController {
     )
 
     const orderId = `${order?.poNumber ?? order?.orderNumber}`
-    
+
     await mail.send((message) => {
       message
-        .to(order!.user!.email)
-        .from(env.get('SMTP_USERNAME'))
+        .to(order!.user!.email, `${order!.user!.firstName} ${order!.user!.lastName}`)
+        .from(env.get('SMTP_FROM_EMAIL'), 'World Reach Seo')
+        .cc(order!.user!.email)
         .subject(`Update on your order - Order ID [${orderId}]`)
         .htmlView('emails/client_order_update_email_html', {
           name: `${order!.user!.firstName} ${order!.user!.lastName}`,

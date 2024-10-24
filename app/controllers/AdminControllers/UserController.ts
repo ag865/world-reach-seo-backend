@@ -60,8 +60,9 @@ export default class UserController {
 
     await mail.send((message) => {
       message
-        .to(user.email)
-        .from(env.get('SMTP_USERNAME'))
+        .to(user.email, `${user.firstName} ${user.lastName}`)
+        .from(env.get('SMTP_FROM_EMAIL'), 'World Reach Seo')
+        .cc(user.email)
         .subject('Marketplace account activation')
         .htmlView('emails/activate_account_email_html', {
           url: `${env.get('CLIENT_URL')}/auth/login`,
@@ -71,6 +72,18 @@ export default class UserController {
     })
 
     return response.json({ msg: 'User activated successfully!' })
+  }
+
+  async verify({ response, params }: HttpContext) {
+    const id = params.id as number
+
+    const user = await UserServices.getUserByValue('id', id)
+
+    if (!user || user.isAdmin) throw new NotFoundException('id', 'User doest not exist')
+
+    await UserServices.update({ isVerified: true }, 'id', id)
+
+    return response.json({ msg: 'User verified successfully!' })
   }
 
   async deActivate({ response, params }: HttpContext) {
@@ -94,8 +107,9 @@ export default class UserController {
 
     await mail.send((message) => {
       message
-        .to(user.email)
-        .from(env.get('SMTP_USERNAME'))
+        .to(user.email, `${user.firstName} ${user.lastName}`)
+        .from(env.get('SMTP_FROM_EMAIL'), 'World Reach Seo')
+        .cc(user.email)
         .subject('Verify your email address')
         .htmlView('emails/verify_email_html', {
           url: `${env.get('CLIENT_URL')}/auth/verify/${user.referralKey}`,
@@ -103,7 +117,6 @@ export default class UserController {
           clientURL: env.get('CLIENT_URL'),
         })
     })
-    console.log('Email sent successfully')
 
     return response.json({ msg: 'Verification Email Sent Successfully!' })
   }

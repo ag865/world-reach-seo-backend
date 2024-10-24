@@ -55,8 +55,9 @@ export default class OrdersController {
 
     await mail.send((message) => {
       message
-        .to(user!.email)
-        .from(env.get('SMTP_USERNAME'))
+        .to(user!.email, `${user!.firstName} ${user!.lastName}`)
+        .from(env.get('SMTP_FROM_EMAIL'), 'World Reach Seo')
+        .cc(user!.email)
         .subject('Order Confirmation')
         .htmlView('emails/client_order_place_email_html', {
           name: `${user!.firstName} ${user!.lastName}`,
@@ -66,7 +67,7 @@ export default class OrdersController {
     await mail.send((message) => {
       message
         .to('contact@worldreachseo.com')
-        .from(env.get('SMTP_USERNAME'))
+        .from(env.get('SMTP_FROM_EMAIL'))
         .subject(`New Backlink Order Received - Order ID [${order.orderNumber}]`)
         .htmlView('emails/admin_order_place_email_html', {
           name: `${user!.firstName} ${user!.lastName}`,
@@ -83,7 +84,7 @@ export default class OrdersController {
       await mail.send((message) => {
         message
           .to(salesRep.email)
-          .from(env.get('SMTP_USERNAME'))
+          .from(env.get('SMTP_FROM_EMAIL'))
           .subject(`New Backlink Order Received - Order ID [${order.orderNumber}]`)
           .htmlView('emails/admin_order_place_email_html', {
             name: `${user!.firstName} ${user!.lastName}`,
@@ -94,19 +95,6 @@ export default class OrdersController {
           })
       })
 
-    await mail.send((message) => {
-      message
-        .to('abdulghaffar865@gmail.com')
-        .from(env.get('SMTP_USERNAME'))
-        .subject(`New Backlink Order Received - Order ID [${order.orderNumber}]`)
-        .htmlView('emails/admin_order_place_email_html', {
-          name: `${user!.firstName} ${user!.lastName}`,
-          orderId: order.id,
-          noOfLinks: details.length,
-          totalAmount: order.totalAmount.toLocaleString(),
-          countries: countries.length,
-        })
-    })
     Ws.io?.emit('message', notification)
 
     return response.json({ msg: 'Order placed successfully', order })
@@ -164,7 +152,7 @@ export default class OrdersController {
     await mail.send((message) => {
       message
         .to('contact@worldreachseo.com')
-        .from(env.get('SMTP_USERNAME'))
+        .from(env.get('SMTP_FROM_EMAIL'))
         .subject(`Update to Backlink Order - Order ID [${orderId}]`)
         .htmlView('emails/admin_order_update_email_html', {
           name: `${detail!.order!.user!.firstName} ${detail!.order!.user!.lastName}`,

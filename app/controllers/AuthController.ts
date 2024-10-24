@@ -50,8 +50,9 @@ export default class AuthController {
 
     await mail.send((message) => {
       message
-        .to(user.email)
-        .from(env.get('SMTP_USERNAME'))
+        .to(user.email, `${user.firstName} ${user.lastName}`)
+        .from(env.get('SMTP_FROM_EMAIL'), 'World Reach Seo')
+        .cc(user.email)
         .subject('Verify your email address')
         .htmlView('emails/verify_email_html', {
           url: `${env.get('CLIENT_URL')}/auth/verify/${user.referralKey}`,
@@ -75,8 +76,9 @@ export default class AuthController {
     if (email)
       await mail.send((message) => {
         message
-          .to(email)
-          .from(env.get('SMTP_USERNAME'))
+          .to(email, name)
+          .from(env.get('SMTP_FROM_EMAIL'), 'World Reach Seo')
+          .cc(email)
           .subject('New Referral Sign up')
           .htmlView('emails/referral_sign_up', {
             name: `${name}`,
@@ -85,19 +87,6 @@ export default class AuthController {
             url: `${env.get('ADMIN_URL')}/users`,
           })
       })
-
-    await mail.send((message) => {
-      message
-        .to('abdulghaffar865@gmail.com')
-        .from(env.get('SMTP_USERNAME'))
-        .subject('New Referral Sign up')
-        .htmlView('emails/referral_sign_up', {
-          name: `${name}`,
-          clientName: `${user.firstName} ${user.lastName}`,
-          clientEmail: `${user.email}`,
-          url: `${env.get('ADMIN_URL')}/users`,
-        })
-    })
 
     return response.json({
       msg: 'Account created successfully, please check your mail inbox and verify your email address.',
@@ -150,8 +139,9 @@ export default class AuthController {
     if (user)
       await mail.send((message) => {
         message
-          .to(user.email)
-          .from(env.get('SMTP_USERNAME'))
+          .to(user.email, `${user.firstName} ${user.lastName}`)
+          .from(env.get('SMTP_FROM_EMAIL'), 'World Reach Seo')
+          .cc(user.email)
           .subject('Reset your password')
           .htmlView('emails/recover_password_email_html', {
             url: `${env.get('CLIENT_URL')}/auth/recover-password/${user.resetPasswordKey}`,

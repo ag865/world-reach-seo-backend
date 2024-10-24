@@ -29,6 +29,7 @@ router
         router.post('/resend-verification-email/:id', [UserController, 'resendVerificationEmail'])
         router.put('activate/:id', [UserController, 'activate'])
         router.put('de-activate/:id', [UserController, 'deActivate'])
+        router.put('verify/:id', [UserController, 'verify'])
         router.put('/:id', [UserController, 'update'])
         router.get('/', [UserController, 'get'])
         router.get('/:id', [UserController, 'getUser'])
