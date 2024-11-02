@@ -20,37 +20,64 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare id: number
 
   @column()
-  declare firstName: string | null
+  declare firstName?: string | null
 
   @column()
-  declare lastName: string | null
+  declare lastName?: string | null
 
   @column()
   declare email: string
 
   @column()
-  declare avatar: string
+  declare avatar?: string
 
   @column()
-  declare resetPasswordKey: string
+  declare country?: string
 
   @column()
-  declare referralKey: string
+  declare company?: string
+
+  @column()
+  declare phoneNumber?: string
+
+  @column()
+  declare vatId?: string
+
+  @column()
+  declare address?: string
+
+  @column()
+  declare city?: string
+
+  @column()
+  declare postalCode?: string
+
+  @column()
+  declare industry?: string
+
+  @column()
+  declare resetPasswordKey?: string
+
+  @column()
+  declare referralKey?: string
 
   @column({ serializeAs: null })
-  declare password: string
+  declare password?: string
 
   @column()
-  declare isAdmin: boolean
+  declare isAdmin?: boolean
 
   @column()
-  declare isActive: boolean
+  declare isActive?: boolean
 
   @column()
-  declare isVerified: boolean
+  declare isVerified?: boolean
 
   @column()
-  declare referralId: number
+  declare referralId?: number
+
+  @column()
+  declare stepNumber?: number
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

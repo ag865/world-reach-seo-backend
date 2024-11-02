@@ -112,7 +112,7 @@ export default class UserController {
         .cc(user.email)
         .subject('Verify your email address')
         .htmlView('emails/verify_email_html', {
-          url: `${env.get('CLIENT_URL')}/auth/verify/${user.referralKey}`,
+          url: `${env.get('CLIENT_URL')}/auth/registration/verify/${user.referralKey}`,
           name: `${user.firstName} ${user.lastName}`,
           clientURL: env.get('CLIENT_URL'),
         })
@@ -172,7 +172,7 @@ export default class UserController {
     const user = await UserServices.getUserByValue('id', userId)
     if (!user) throw new NotFoundException('id', 'User not found')
 
-    const passwordMatched = await hash.verify(user.password, data.currentPassword)
+    const passwordMatched = await hash.verify(user.password!, data.currentPassword)
     if (!passwordMatched) throw new InvalidCredentialsException('password')
 
     const hashedPassword = await hash.make(data.password)

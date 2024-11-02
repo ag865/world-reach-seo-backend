@@ -7,6 +7,7 @@ export const categoryCreateValidator = vine.compile(
       .string()
       .trim()
       .use(uniqueRule({ table: 'categories', column: 'name', iLike: true })),
+    isMain: vine.boolean().optional(),
   })
 )
 
@@ -22,6 +23,7 @@ export const categoryUpdateValidator = (id: number) =>
         .string()
         .trim()
         .use(uniqueWhenUpdateRule({ table: 'categories', column: 'name', id, iLike: true })),
+      isMain: vine.boolean().optional(),
     })
   )
 

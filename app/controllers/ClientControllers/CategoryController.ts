@@ -6,8 +6,10 @@ export default class CategoryController {
     const { page = 1, limit = 10, search = '', sort = 'name', order = 'desc' } = request.qs()
 
     const data = await Category.query()
-      .whereILike('name', `%${search}%`)
-      .orWhereILike('slug', `%${search}%`)
+      .where('isMain', true)
+      .andWhere((subQuery) => {
+        subQuery.whereILike('name', `%${search}%`).orWhereILike('slug', `%${search}%`)
+      })
       .orderBy(sort, order)
       .paginate(page, limit)
 

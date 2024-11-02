@@ -55,7 +55,7 @@ export default class AuthController {
         .cc(user.email)
         .subject('Verify your email address')
         .htmlView('emails/verify_email_html', {
-          url: `${env.get('CLIENT_URL')}/auth/verify/${user.referralKey}`,
+          url: `${env.get('CLIENT_URL')}/auth/registration/verify/${user.referralKey}`,
           name: `${user.firstName} ${user.lastName}`,
           clientURL: env.get('CLIENT_URL'),
         })
@@ -214,10 +214,8 @@ export default class AuthController {
 
     if (!user) throw new NotFoundException('email', 'Invalid email address')
 
-    await UserServices.update({ isVerified: true }, 'referralKey', id)
+    await UserServices.update({ isVerified: true, stepNumber: 2 }, 'referralKey', id)
 
-    return response.json({
-      msg: 'Your Account has been verified successfully! You will receive an email when your account will be activated by our team!',
-    })
+    return response.json(user)
   }
 }

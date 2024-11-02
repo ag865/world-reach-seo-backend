@@ -7,11 +7,23 @@ import type { HttpContext } from '@adonisjs/core/http'
 
 export default class CategoriesController {
   async index({ request, response }: HttpContext) {
-    const { page = 1, limit = 10, search = '', sort = 'name', order = 'desc' } = request.qs()
+    const {
+      page = 1,
+      limit = 10,
+      search = '',
+      sort = 'name',
+      order = 'desc',
+      isMain = false,
+    } = request.qs()
 
-    const data = await Category.query()
-      .whereILike('name', `%${search}%`)
-      .orWhereILike('slug', `%${search}%`)
+    const query = Category.query()
+
+    if (isMain) query.where('isMain', isMain)
+
+    const data = await query
+      .andWhere((subQuery) =>
+        subQuery.whereILike('name', `%${search}%`).orWhereILike('slug', `%${search}%`)
+      )
       .orderBy(sort, order)
       .paginate(page, limit)
 
@@ -21,7 +33,7 @@ export default class CategoriesController {
   async store({ response, request }: HttpContext) {
     const data = await request.validateUsing(categoryCreateValidator)
 
-    await Category.create({ name: data.name, slug: string.slug(data.name) })
+    await Category.create({ name: data.name, slug: string.slug(data.name), isMain: data.isMain })
 
     return response.json({
       msg: 'Category created successfully',
@@ -49,6 +61,7 @@ export default class CategoriesController {
 
     category.name = data.name
     category.slug = string.slug(data.name)
+    category.isMain = data.isMain ?? false
 
     await category.save()
 

@@ -64,7 +64,6 @@ export const signupValidator = vine.compile(
     key: vine.string().optional(),
   })
 )
-
 signupValidator.messagesProvider = new SimpleMessagesProvider({
   'firstName.required': 'First name is required',
   'lastName.required': 'Last name is required',
@@ -75,6 +74,48 @@ signupValidator.messagesProvider = new SimpleMessagesProvider({
   'password.minLength': 'Password must be 8 characters long',
   'password.regex':
     'Password must contain at least one upper case letter, one lower case letter, one number and one special character',
+})
+
+export const personalInfoValidator = vine.compile(
+  vine.object({
+    firstName: vine.string().trim(),
+    lastName: vine.string().trim(),
+    company: vine.string().trim(),
+    country: vine.string().trim(),
+    phone: vine.string().trim().optional(),
+    vatId: vine.string().trim().optional(),
+    address: vine.string().trim().optional(),
+    city: vine.string().trim(),
+    postalCode: vine.string().trim(),
+  })
+)
+personalInfoValidator.messagesProvider = new SimpleMessagesProvider({
+  'firstName.required': 'First name is required',
+  'lastName.required': 'Last name is required',
+  'company.required': 'Company is required',
+  'country.required': 'Country is required',
+  'city.required': 'City is required',
+  'postalCode.required': 'Postal code is required',
+})
+
+export const industryInfoValidator = vine.compile(
+  vine.object({
+    industry: vine.string().trim(),
+  })
+)
+industryInfoValidator.messagesProvider = new SimpleMessagesProvider({
+  'industry.required': 'Industry is required',
+})
+
+export const emailRegistrationValidator = vine.compile(
+  vine.object({
+    email: vine.string().trim().email(),
+    key: vine.string().optional(),
+  })
+)
+emailRegistrationValidator.messagesProvider = new SimpleMessagesProvider({
+  'email.required': 'Email is required',
+  'email.email': 'Invalid email address',
 })
 
 export const referralSignupValidator = (id: number) =>

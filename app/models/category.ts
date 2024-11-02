@@ -13,6 +13,9 @@ export default class Category extends BaseModel {
   @column()
   declare slug: string
 
+  @column()
+  declare isMain: boolean
+
   @manyToMany(() => Website, {
     localKey: 'id',
     relatedKey: 'id',

@@ -17,7 +17,7 @@ const loginUser = async (
   if (checkVerification && !user?.isVerified)
     throw new ForbiddenAccessException('email', 'Please verify your email address')
 
-  const passwordMatched = await hash.verify(user.password, password)
+  const passwordMatched = await hash.verify(user.password!, password)
   if (!passwordMatched) throw new InvalidCredentialsException('password')
 
   return user

@@ -1,11 +1,23 @@
 import AuthController from '#controllers/AuthController'
+import RegistrationsController from '#controllers/RegistrationsController'
 import router from '@adonisjs/core/services/router'
 
 router
   .group(() => {
     router.post('login', [AuthController, 'clientLogin'])
 
-    router.post('register', [AuthController, 'clientSignup'])
+    router
+      .group(() => {
+        router.post('email', [RegistrationsController, 'emailRegistration'])
+        router.post('password/:id', [RegistrationsController, 'savePassword'])
+        router.post('personal-info/:id', [RegistrationsController, 'savePersonalInfo'])
+        router.post('industry/:id', [RegistrationsController, 'saveIndustryInfo'])
+        router.post('send-confirmation-email/:id', [
+          RegistrationsController,
+          'sendConfirmationEmail',
+        ])
+      })
+      .prefix('register')
 
     router.post('reset-password', [AuthController, 'clientResetPassword'])
 

@@ -27,6 +27,7 @@ export default class MemberController {
       isActive: true,
       password: hashedPassword,
       isVerified: true,
+      stepNumber: 6,
     })
 
     return response.json({ msg: 'Member created successfully!' })

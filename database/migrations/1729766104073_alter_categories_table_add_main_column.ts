@@ -1,14 +1,11 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
 
 export default class extends BaseSchema {
-  protected tableName = 'websites'
+  protected tableName = 'categories'
 
   async up() {
     this.schema.alterTable(this.tableName, (table) => {
-      table.date('upload_date').defaultTo(null)
-      table.date('last_updated').defaultTo(null)
+      table.boolean('is_main').defaultTo(false)
     })
   }
-
-  async down() {}
 }
