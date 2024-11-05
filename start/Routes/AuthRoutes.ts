@@ -16,6 +16,8 @@ router
           RegistrationsController,
           'sendConfirmationEmail',
         ])
+
+        router.post('appointment/:id', [RegistrationsController, 'saveAppointment'])
       })
       .prefix('register')
 

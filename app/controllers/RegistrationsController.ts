@@ -60,7 +60,7 @@ export default class RegistrationsController {
       return response.status(400).json({ errors: [{ message: 'Email address is already taken' }] })
     }
 
-    if (user!.stepNumber! >= 5) {
+    if (user!.stepNumber! === 6) {
       return response.status(400).json({ errors: [{ message: 'Email address is already taken' }] })
     }
 
@@ -156,5 +156,21 @@ export default class RegistrationsController {
     })
 
     return response.json({ msg: 'Confirmation email sent successfully!' })
+  }
+
+  async saveAppointment({ response, params }: HttpContext) {
+    const { id } = params
+
+    const user = await UserServices.getUserByValue('id', id)
+
+    if (!user) {
+      throw new NotFoundException('User Not found!')
+    }
+
+    await UserServices.update({ stepNumber: 6 }, 'id', id)
+
+    return response.json({
+      msg: 'Appointment booked successfully! You will be able to login once your account will be activated from our administration side!',
+    })
   }
 }

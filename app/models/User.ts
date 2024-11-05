@@ -6,7 +6,9 @@ import { BaseModel, belongsTo, column, hasMany, hasOne } from '@adonisjs/lucid/o
 import type { BelongsTo, HasMany, HasOne } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
 import BillingAddress from './BillingAddress.js'
+import Favourite from './Favourite.js'
 import OrderMaster from './OrderMaster.js'
+import Project from './Project.js'
 import UserCart from './UserCart.js'
 import UserCountry from './UserCountry.js'
 
@@ -102,6 +104,12 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @belongsTo(() => User, { foreignKey: 'referral_id' })
   declare referredBy: BelongsTo<typeof User>
+
+  @hasMany(() => Favourite, { foreignKey: 'user_id' })
+  declare favourites: HasMany<typeof Favourite>
+
+  @hasMany(() => Project)
+  declare projects: HasMany<typeof Project>
 
   static accessTokens = DbAccessTokensProvider.forModel(User)
 }

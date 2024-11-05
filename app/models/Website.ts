@@ -1,8 +1,9 @@
-import { BaseModel, column, hasMany, manyToMany } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column, hasMany, manyToMany } from '@adonisjs/lucid/orm'
 import * as Relations from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
 import Category from './Category.js'
 import OrderDetail from './OrderDetail.js'
+import Favourite from './favourite.js'
 
 export default class Website extends BaseModel {
   @column({ isPrimary: true })
@@ -128,6 +129,9 @@ export default class Website extends BaseModel {
 
   @hasMany(() => OrderDetail)
   declare orderDetails: Relations.HasMany<typeof OrderDetail>
+
+  @belongsTo(() => Favourite, { foreignKey: 'website_id' })
+  declare favourites: Relations.BelongsTo<typeof Favourite>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

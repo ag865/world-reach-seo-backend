@@ -21,7 +21,15 @@ export default class AuthController {
 
     const user = await AuthServices.loginUser(data.email, data.password, 'Client', true)
 
-    if (!user.isActive) throw new NotFoundException('email', 'Your account is not approved yet')
+    if (user.stepNumber! < 6) {
+      return response.json({ user })
+    }
+
+    if (!user.isActive)
+      throw new NotFoundException(
+        'email',
+        'Your account is not activated yet! Please contact the administrator to activate your account!'
+      )
 
     const token = await User.accessTokens.create(user)
 
