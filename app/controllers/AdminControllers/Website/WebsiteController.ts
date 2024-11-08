@@ -23,8 +23,8 @@ export default class WebsitesController {
     const website = await Website.create({
       ...data,
       domain: data.domain.toLowerCase(),
-      uploadDate: data.uploadDate ? DateTime.fromJSDate(data.uploadDate) : undefined,
-      lastUpdated: data.lastUpdated ? DateTime.fromJSDate(data.lastUpdated) : undefined,
+      uploadDate: data.uploadDate ? new Date(data.uploadDate) : undefined,
+      lastUpdated: data.lastUpdated ? new Date(data.lastUpdated) : undefined,
     })
 
     if (categories) await website.related('categories').attach(categories)

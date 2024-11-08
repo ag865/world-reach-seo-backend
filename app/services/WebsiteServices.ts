@@ -255,7 +255,13 @@ const updateWebsites = async (websites: any[], existingWebsites: Website[]) => {
   }
 }
 
-const getWebsites = async (params: any, paginate = true, getCount = false, getHidden = true) => {
+const getWebsites = async (
+  params: any,
+  paginate = true,
+  getCount = false,
+  getHidden = true,
+  userId?: number
+) => {
   const {
     page = 1,
     limit = 10,
@@ -279,15 +285,29 @@ const getWebsites = async (params: any, paginate = true, getCount = false, getHi
     banner = false,
     ids = '',
     search = '',
+    favourite = false,
+    projectId = null,
   } = params
 
   const query = Website.query()
 
-  if (!getCount) query.preload('categories')
+  if (!getCount) {
+    query.preload('categories')
+  }
 
-  if (!getHidden) query.where('hide', false)
+  if (!getHidden) {
+    query.where('hide', false)
+  }
 
-  if (search) query.andWhereILike('domain', `%${search}%`)
+  if (userId) {
+    query.preload('favourites', (query) => {
+      query.preload('favourites')
+    })
+  }
+
+  if (search) {
+    query.andWhereILike('domain', `%${search}%`)
+  }
 
   if (ids) {
     const websiteIds = typeof ids === 'string' ? [ids] : ids
@@ -317,41 +337,79 @@ const getWebsites = async (params: any, paginate = true, getCount = false, getHi
     if (niches.includes('Forex')) query.andWhere('acceptsForex', true)
     if (niches.includes('Sports Betting')) query.andWhere('sportsBetting', true)
   }
+  if (favourite === 'true' && userId) {
+    query.whereHas('favourites', (query) => {
+      query.where('user_id', userId)
+      if (projectId) {
+        query.andWhere('project_id', projectId)
+      }
+    })
+  }
 
-  if (mozDaMin) query.andWhere('moz_da', '>=', mozDaMin)
+  if (mozDaMin) {
+    query.andWhere('moz_da', '>=', mozDaMin)
+  }
 
-  if (mozDaMax) query.andWhere('moz_da', '<=', mozDaMax)
+  if (mozDaMax) {
+    query.andWhere('moz_da', '<=', mozDaMax)
+  }
 
-  if (spamScoreMin) query.andWhere('spam_score', '>=', spamScoreMin)
+  if (spamScoreMin) {
+    query.andWhere('spam_score', '>=', spamScoreMin)
+  }
 
-  if (spamScoreMax) query.andWhere('spam_score', '<=', spamScoreMax)
+  if (spamScoreMax) {
+    query.andWhere('spam_score', '<=', spamScoreMax)
+  }
 
-  if (aHrefsDrMin) query.andWhere('a_hrefs_dr', '>=', aHrefsDrMin)
+  if (aHrefsDrMin) {
+    query.andWhere('a_hrefs_dr', '>=', aHrefsDrMin)
+  }
 
-  if (aHrefsDrMax) query.andWhere('a_hrefs_dr', '<=', aHrefsDrMax)
+  if (aHrefsDrMax) {
+    query.andWhere('a_hrefs_dr', '<=', aHrefsDrMax)
+  }
 
-  if (organicTrafficMin) query.andWhere('organic_traffic', '>=', organicTrafficMin)
+  if (organicTrafficMin) {
+    query.andWhere('organic_traffic', '>=', organicTrafficMin)
+  }
 
-  if (organicTrafficMax) query.andWhere('organic_traffic', '<=', organicTrafficMax)
+  if (organicTrafficMax) {
+    query.andWhere('organic_traffic', '<=', organicTrafficMax)
+  }
 
   if (homePageLink === 'Yes') {
-    if (priceMin) query.andWhere('homepage_link_price', '>=', priceMin)
+    if (priceMin) {
+      query.andWhere('homepage_link_price', '>=', priceMin)
+    }
 
-    if (priceMax) query.andWhere('homepage_link_price', '<=', priceMax)
+    if (priceMax) {
+      query.andWhere('homepage_link_price', '<=', priceMax)
+    }
   } else {
-    if (priceMin) query.andWhere('selling_general_price', '>=', priceMin)
+    if (priceMin) {
+      query.andWhere('selling_general_price', '>=', priceMin)
+    }
 
-    if (priceMax) query.andWhere('selling_general_price', '<=', priceMax)
+    if (priceMax) {
+      query.andWhere('selling_general_price', '<=', priceMax)
+    }
   }
 
   if (homePageLink && homePageLink !== 'None')
     query.andWhere('home_page_link', homePageLink.toLowerCase())
 
-  if (banner && banner !== 'None') query.andWhere('banner', banner.toLowerCase())
+  if (banner && banner !== 'None') {
+    query.andWhere('banner', banner.toLowerCase())
+  }
 
-  if (getCount) return await query.count('id')
+  if (getCount) {
+    return await query.count('id')
+  }
 
-  if (paginate) return await query.orderBy(sort, order).paginate(page, limit)
+  if (paginate) {
+    return await query.orderBy(sort, order).paginate(page, limit)
+  }
 
   return await query.orderBy(sort, order)
 }
@@ -441,4 +499,8 @@ const getCountWebsites = async (params: any) => {
   return count?.$extras.total
 }
 
-export { addWebsites, getCountWebsites, getWebsites }
+const getWebsite = async (key: string, value: any) => {
+  return await Website.query().where(key, value).first()
+}
+
+export { addWebsites, getCountWebsites, getWebsite, getWebsites }

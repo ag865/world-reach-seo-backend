@@ -6,6 +6,7 @@ export default class WebsitesController {
   async get({ response, request, auth }: HttpContext) {
     let params = request.qs()
 
+    const userId = auth.user?.id
     const { country } = params
 
     if (!country) {
@@ -18,7 +19,7 @@ export default class WebsitesController {
       params = { ...params, country: countries }
     }
 
-    const data = await getWebsites(params, true, false, false)
+    const data = await getWebsites(params, true, false, false, userId)
 
     return response.json(data)
   }
@@ -26,6 +27,7 @@ export default class WebsitesController {
   async getCount({ response, request, auth }: HttpContext) {
     let params = request.qs()
 
+    const userId = auth.user?.id
     const { country } = params
 
     if (!country) {

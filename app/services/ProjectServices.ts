@@ -22,14 +22,32 @@ const getProjects = async (params: any) => {
   return await query.orderBy(sort, order).paginate(page, limit)
 }
 
-const getProjectById = async (id: number) => {
-  return await Project.query()
-    .where({ id })
-    .preload('favourites', (projectFavourites) => {
+const getProjectByValue = async (key: string, value: any, includePreloads: boolean = true) => {
+  const query = Project.query().where({ [key]: value })
+
+  if (includePreloads) {
+    query.preload('favourites', (projectFavourites) => {
       projectFavourites.preload('favourite', (favourite) => {
         favourite.preload('website')
       })
     })
+  }
+
+  return await query.first()
 }
 
-export { createProject, deleteProject, getProjectById, getProjects, updatedProject }
+const getProjectByValueWhereIdNotEqual = async (key: string, value: any, id: number) => {
+  return await Project.query()
+    .where({ [key]: value })
+    .andWhereNot({ id })
+    .first()
+}
+
+export {
+  createProject,
+  deleteProject,
+  getProjectByValue,
+  getProjectByValueWhereIdNotEqual,
+  getProjects,
+  updatedProject,
+}

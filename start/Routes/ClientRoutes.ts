@@ -4,9 +4,11 @@ import BillingAddressController from '#controllers/ClientControllers/BillingAddr
 import CartsController from '#controllers/ClientControllers/CartController'
 import CategoryController from '#controllers/ClientControllers/CategoryController'
 import CouponController from '#controllers/ClientControllers/CouponController'
+import FavouritesController from '#controllers/ClientControllers/FavouritesController'
 import NotificationsController from '#controllers/ClientControllers/NotificationsController'
 import OrdersController from '#controllers/ClientControllers/OrdersController'
 import PaypalController from '#controllers/ClientControllers/PaypalController'
+import ProjectController from '#controllers/ClientControllers/ProjectController'
 import SalesRepresentativesController from '#controllers/ClientControllers/SalesRepresentativeController'
 import StripesController from '#controllers/ClientControllers/StripeController'
 import WebsitesController from '#controllers/ClientControllers/WebsiteController'
@@ -46,6 +48,21 @@ router
     router.resource('/stripe', StripesController).apiOnly().only(['index', 'store'])
 
     router.resource('/paypal', PaypalController).apiOnly().only(['update', 'store'])
+
+    router
+      .group(() => {
+        router.post('/', [FavouritesController, 'store'])
+        router.delete('/:id', [FavouritesController, 'destroy'])
+        router.post('/project/:id', [FavouritesController, 'destroyProjectFavourite'])
+      })
+      .prefix('/favourtie')
+
+    router.resource('/favourite', FavouritesController).apiOnly().only(['store', 'destroy'])
+
+    router
+      .resource('/project', ProjectController)
+      .apiOnly()
+      .only(['update', 'store', 'destroy', 'index', 'show'])
 
     router
       .group(() => {

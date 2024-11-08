@@ -6,48 +6,66 @@ export default class ProjectController {
     const { name } = request.body()
 
     const userId = auth.user?.id
-
-    if (!name)
-      response.status(400).json({
+    if (!name) {
+      return response.status(400).json({
         errors: [{ message: 'Project title is required!', field: 'name' }],
       })
+    }
+
+    const project = await ProjectServices.getProjectByValue('name', name, false)
+    if (project) {
+      return response.status(400).json({
+        errors: [{ message: 'Project title already exists!', field: 'name' }],
+      })
+    }
 
     const newProject = await ProjectServices.createProject(name, userId!)
 
     return response.status(200).json({ msg: 'Project created successfully!', data: newProject })
   }
 
-  async update({ request, response, auth, params }: HttpContext) {
+  async update({ request, response, params }: HttpContext) {
     const { id } = params
 
     const { name } = request.body()
-
-    const userId = auth.user?.id
-
     if (!name)
-      response.status(400).json({
+      return response.status(400).json({
         errors: [{ message: 'Project title is required!', field: 'name' }],
       })
 
-    const newProject = await ProjectServices.createProject(name, userId!)
+    const project = await ProjectServices.getProjectByValueWhereIdNotEqual('name', name, id)
+    if (project) {
+      return response.status(400).json({
+        errors: [{ message: 'Project title already exists!', field: 'name' }],
+      })
+    }
 
-    return response.status(200).json({ msg: 'Project created successfully!', data: newProject })
+    await ProjectServices.updatedProject(name, id)
+
+    return response.status(200).json({ msg: 'Project updated successfully!' })
   }
 
-  async delete({ request, response, auth, params }: HttpContext) {
+  async destroy({ response, params }: HttpContext) {
     const { id } = params
 
-    const { name } = request.body()
+    await ProjectServices.deleteProject(id)
 
-    const userId = auth.user?.id
+    return response.status(200).json({ msg: 'Project deleted successfully!' })
+  }
 
-    if (!name)
-      response.status(400).json({
-        errors: [{ message: 'Project title is required!', field: 'name' }],
-      })
+  async index({ request, response }: HttpContext) {
+    const params = request.qs()
 
-    const newProject = await ProjectServices.createProject(name, userId!)
+    const data = await ProjectServices.getProjects(params)
 
-    return response.status(200).json({ msg: 'Project created successfully!', data: newProject })
+    return response.status(200).json(data)
+  }
+
+  async show({ response, params }: HttpContext) {
+    const { id } = params
+
+    const data = await ProjectServices.getProjectByValue('id', id)
+
+    return response.status(200).json(data)
   }
 }
