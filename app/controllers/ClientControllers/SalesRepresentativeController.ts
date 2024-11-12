@@ -8,7 +8,7 @@ export default class SalesRepresentativesController {
 
     const user = await User.query().where('id', userId).first()
 
-    if (user) {
+    if (user && user.referralId) {
       const salesRepresentative = await User.query().where('id', user.referralId).first()
 
       if (salesRepresentative)

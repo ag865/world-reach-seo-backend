@@ -72,6 +72,15 @@ export default class WebsiteExportController {
         })
       }
 
+      let formattedUploadDate = ''
+      let formattedLastUpdatedDate = ''
+
+      if (d.uploadDate)
+        formattedUploadDate = `${String(d.uploadDate.getMonth() + 1).padStart(2, '0')}.${String(d.uploadDate.getDate()).padStart(2, '0')}.${d.uploadDate.getFullYear()}`
+
+      if (d.lastUpdated)
+        formattedLastUpdatedDate = `${String(d.lastUpdated.getMonth() + 1).padStart(2, '0')}.${String(d.lastUpdated.getDate()).padStart(2, '0')}.${d.lastUpdated.getFullYear()}`
+
       csvData.push([
         d.paidGeneralPrice ? d.paidGeneralPrice?.toString() : '',
         d.paidCasinoPrice ? d.paidCasinoPrice?.toString() : '',
@@ -101,8 +110,8 @@ export default class WebsiteExportController {
         d.insertionLink ? 'Yes' : 'No',
         d.insertionLinkPrice ? d.insertionLinkPrice?.toString() : '',
         d.websiteEmail ? d.websiteEmail?.toString() : '',
-        d.uploadDate ? d.uploadDate.toFormat('MM.dd.yyyy') : d.createdAt.toFormat('MM.dd.yyyy'),
-        d.lastUpdated ? d.lastUpdated.toFormat('MM.dd.yyyy') : d.createdAt.toFormat('MM.dd.yyyy'),
+        d.uploadDate ? formattedUploadDate : d.createdAt.toFormat('MM.dd.yyyy'),
+        d.lastUpdated ? formattedLastUpdatedDate : d.createdAt.toFormat('MM.dd.yyyy'),
         d.bannerNotes ? d.bannerNotes?.replace(/,/g, ';').toString() : '',
         d.homepageLinkNotes ? d.homepageLinkNotes?.replace(/,/g, ';').toString() : '',
         d.adminNotes ? d.adminNotes?.replace(/,/g, ';').toString() : '',

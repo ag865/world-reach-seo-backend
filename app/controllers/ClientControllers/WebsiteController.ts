@@ -28,6 +28,7 @@ export default class WebsitesController {
     let params = request.qs()
 
     const userId = auth.user?.id
+
     const { country } = params
 
     if (!country) {
@@ -40,7 +41,7 @@ export default class WebsitesController {
       params = { ...params, country: countries }
     }
 
-    const data = await getWebsites(params, true, true, true)
+    const data = await getWebsites(params, true, true, true, userId)
 
     return response.json({ count: data[0].$extras.count })
   }
