@@ -22,7 +22,7 @@ export default class Favourite extends BaseModel {
   declare website: Relations.BelongsTo<typeof Website>
 
   @hasMany(() => ProjectFavourite, { foreignKey: 'favouriteId' })
-  declare favourites: Relations.HasMany<typeof ProjectFavourite>
+  declare projectfavourites: Relations.HasMany<typeof ProjectFavourite>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

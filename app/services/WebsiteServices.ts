@@ -300,8 +300,8 @@ const getWebsites = async (
   }
 
   if (userId) {
-    query.preload('favourites', (query) => {
-      query.preload('favourites')
+    query.preload('favourites', (favouritesQuery) => {
+      favouritesQuery.preload('projectfavourites')
     })
   }
 
@@ -337,11 +337,14 @@ const getWebsites = async (
     if (niches.includes('Forex')) query.andWhere('acceptsForex', true)
     if (niches.includes('Sports Betting')) query.andWhere('sportsBetting', true)
   }
+
   if (favourite === 'true' && userId) {
-    query.whereHas('favourites', (query) => {
-      query.where('user_id', userId)
+    query.whereHas('favourites', (favouritesQuery) => {
+      favouritesQuery.where('user_id', userId)
       if (projectId) {
-        query.andWhere('project_id', projectId)
+        favouritesQuery.whereHas('projectfavourites', (projectFavouriteQuery) => {
+          projectFavouriteQuery.where('project_id', projectId)
+        })
       }
     })
   }
