@@ -14,6 +14,8 @@ import './Routes/AdminRoutes.js'
 
 import './Routes/AuthRoutes.js'
 
+import ScreenshotController from '#controllers/ScreenshotController'
 import './Routes/ClientRoutes.js'
 
 router.get('/api/image/:key', [ImageController, 'download'])
+router.get('/api/screenshot', [ScreenshotController, 'capture'])

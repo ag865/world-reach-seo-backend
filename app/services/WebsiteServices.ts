@@ -299,7 +299,7 @@ const getWebsites = async (
     query.where('hide', false)
   }
 
-  if (userId) {
+  if (userId && !getCount) {
     query.preload('favourites', (favouritesQuery) => {
       favouritesQuery.preload('projectfavourites')
     })
@@ -437,6 +437,7 @@ const getCountWebsites = async (params: any) => {
     banner = false,
     ids = '',
     search = '',
+    favourite = false,
   } = params
 
   const query = Website.query()

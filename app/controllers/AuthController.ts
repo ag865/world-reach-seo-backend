@@ -218,11 +218,13 @@ export default class AuthController {
   async verifyAccount({ params, response }: HttpContext) {
     const { id } = params
 
-    const user = await UserServices.getUserByValue('referralKey', id)
+    let user = await UserServices.getUserByValue('referralKey', id)
 
     if (!user) throw new NotFoundException('email', 'Invalid email address')
 
     await UserServices.update({ isVerified: true, stepNumber: 2 }, 'referralKey', id)
+
+    user = await UserServices.getUserByValue('referralKey', id)
 
     return response.json(user)
   }

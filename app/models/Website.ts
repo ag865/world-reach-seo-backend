@@ -130,7 +130,7 @@ export default class Website extends BaseModel {
   @hasMany(() => OrderDetail)
   declare orderDetails: Relations.HasMany<typeof OrderDetail>
 
-  @hasMany(() => Favourite)
+  @hasMany(() => Favourite, { foreignKey: 'websiteId' })
   declare favourites: Relations.HasMany<typeof Favourite>
 
   @column.dateTime({ autoCreate: true })
