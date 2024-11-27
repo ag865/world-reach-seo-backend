@@ -129,6 +129,7 @@ export default class UserController {
       sort = 'id',
       order = 'desc',
       referralId = undefined,
+      status = '',
     } = request.qs()
 
     const data: any = await UserServices.getUsers(
@@ -138,7 +139,8 @@ export default class UserController {
       false,
       sort,
       order,
-      referralId
+      referralId,
+      status
     )
 
     return response.json(data)

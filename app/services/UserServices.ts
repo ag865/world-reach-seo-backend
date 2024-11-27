@@ -23,7 +23,8 @@ const getUsers = async (
   isAdmin: boolean = true,
   sort: string = 'id',
   order: 'asc' | 'desc' = 'desc',
-  referralId?: number
+  referralId?: number,
+  status?: string
 ) => {
   const query = User.query()
     .preload('countries')
@@ -34,7 +35,17 @@ const getUsers = async (
         .orWhereILike('email', `%${search}%`)
     })
 
-  if (referralId) query.andWhere('referralId', referralId)
+  if (referralId) {
+    query.andWhere('referralId', referralId)
+  }
+
+  if (status) {
+    if (status === 'active') {
+      query.andWhere('isActive', true)
+    } else {
+      query.andWhere('isActive', false)
+    }
+  }
 
   const sortColumns = sort.split(',')
 

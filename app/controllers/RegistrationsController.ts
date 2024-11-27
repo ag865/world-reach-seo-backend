@@ -1,4 +1,5 @@
 import NotFoundException from '#exceptions/NotFoundException'
+import SalesRepresentative from '#models/SalesRepresentative'
 import User from '#models/User'
 import { AuthServices, UserServices } from '#services/index'
 import env from '#start/env'
@@ -52,6 +53,49 @@ export default class RegistrationsController {
             clientURL: env.get('CLIENT_URL'),
           })
       })
+
+      let salesRepEmail = '',
+        name = ''
+
+      if (referral) {
+        salesRepEmail = referral.email
+        name = `${referral.firstName} ${referral.lastName}`
+      } else {
+        const salesRep = await SalesRepresentative.query().first()
+        salesRepEmail = salesRep?.email ?? ''
+        name = `${salesRep?.firstName} ${salesRep?.lastName}`
+      }
+
+      if (email) {
+        await mail.send((message) => {
+          message
+            .to(salesRepEmail, name)
+            .from(env.get('SMTP_FROM_EMAIL'), 'World Reach Seo')
+            .cc(salesRepEmail)
+            .subject('New Referral Sign up')
+            .htmlView('emails/referral_sign_up', {
+              name: `${name}`,
+              clientName: `${newUser.email}`,
+              clientEmail: `${newUser.email}`,
+              url: `${env.get('ADMIN_URL')}/users`,
+            })
+        })
+      }
+
+      await mail.send((message) => {
+        message
+          .to(env.get('COMPANY_EMAIL'), env.get('COMPANY_NAME'))
+          .from(env.get('SMTP_FROM_EMAIL'), 'World Reach Seo')
+          .cc(env.get('COMPANY_EMAIL'))
+          .subject('New Referral Sign up')
+          .htmlView('emails/referral_sign_up', {
+            name: `${name}`,
+            clientName: `${newUser.email}`,
+            clientEmail: `${newUser.email}`,
+            url: `${env.get('ADMIN_URL')}/users`,
+          })
+      })
+
       return response.json(newUser)
     }
 

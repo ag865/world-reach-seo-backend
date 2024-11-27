@@ -81,7 +81,7 @@ export default class AuthController {
       name = `${salesRep?.firstName} ${salesRep?.lastName}`
     }
 
-    if (email)
+    if (email) {
       await mail.send((message) => {
         message
           .to(email, name)
@@ -95,6 +95,21 @@ export default class AuthController {
             url: `${env.get('ADMIN_URL')}/users`,
           })
       })
+    }
+
+    await mail.send((message) => {
+      message
+        .to(env.get('COMPANY_EMAIL'), env.get('COMPANY_NAME'))
+        .from(env.get('SMTP_FROM_EMAIL'), 'World Reach Seo')
+        .cc(env.get('COMPANY_EMAIL'))
+        .subject('New Referral Sign up')
+        .htmlView('emails/referral_sign_up', {
+          name: `${name}`,
+          clientName: `${user.firstName} ${user.lastName}`,
+          clientEmail: `${user.email}`,
+          url: `${env.get('ADMIN_URL')}/users`,
+        })
+    })
 
     return response.json({
       msg: 'Account created successfully, please check your mail inbox and verify your email address.',

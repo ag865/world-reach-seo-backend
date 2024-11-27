@@ -437,7 +437,6 @@ const getCountWebsites = async (params: any) => {
     banner = false,
     ids = '',
     search = '',
-    favourite = false,
   } = params
 
   const query = Website.query()

@@ -53,4 +53,12 @@ export default await Env.create(new URL('../', import.meta.url), {
   PAYPAL_ID: Env.schema.string(),
   PAYPAL_SECRET: Env.schema.string(),
   PAYPAL_URL: Env.schema.string(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for emails
+  |----------------------------------------------------------
+  */
+  COMPANY_EMAIL: Env.schema.string(),
+  COMPANY_NAME: Env.schema.string(),
 })
