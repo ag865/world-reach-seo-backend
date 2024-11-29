@@ -30,7 +30,7 @@ export default class WebsiteMultipleUploadsController {
     const { chunkData, totalChunks, currentChunkIndex, fileInfo } = request.body()
 
     // Convert array back to Uint8Array
-    const uint8Array = new Uint8Array(chunkData)
+    const uint8Array = chunkData instanceof Uint8Array ? chunkData : new Uint8Array(chunkData)
 
     // Convert Uint8Array to Buffer
     const buffer = Buffer.from(uint8Array)

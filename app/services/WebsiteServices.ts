@@ -506,4 +506,12 @@ const getWebsite = async (key: string, value: any) => {
   return await Website.query().where(key, value).first()
 }
 
-export { addWebsites, getCountWebsites, getWebsite, getWebsites }
+const getWebsitesForScreenshots = async () => {
+  return await Website.query()
+    .select('id', 'domain', 'screenshot_date')
+    .whereNull('screenshot_date')
+    .orWhere('screenshot_date', '<', moment().subtract(1, 'years').toDate())
+    .limit(5)
+}
+
+export { addWebsites, getCountWebsites, getWebsite, getWebsites, getWebsitesForScreenshots }
