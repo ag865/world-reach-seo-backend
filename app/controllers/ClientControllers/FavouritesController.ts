@@ -58,7 +58,8 @@ export default class FavouritesController {
   async destroy({ params, response }: HttpContext) {
     const { id } = params
 
-    const data = await Favourite.findBy('id', id)
+    // const data = await Favourite.findBy('id', id)
+    const data = await Favourite.findBy('websiteId', id)
 
     if (!data) throw new NotFoundException('id', 'Favourite not found!')
 

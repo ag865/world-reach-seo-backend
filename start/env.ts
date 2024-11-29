@@ -61,4 +61,17 @@ export default await Env.create(new URL('../', import.meta.url), {
   */
   COMPANY_EMAIL: Env.schema.string(),
   COMPANY_NAME: Env.schema.string(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring the drive package
+  |----------------------------------------------------------
+  */
+  DRIVE_DISK: Env.schema.enum(['s3'] as const),
+  AWS_ACCESS_KEY_ID: Env.schema.string(),
+  AWS_SECRET_ACCESS_KEY: Env.schema.string(),
+  AWS_REGION: Env.schema.string(),
+  S3_BUCKET: Env.schema.string(),
+
+  FLASH_API_ACCESS_KEY: Env.schema.string(),
 })

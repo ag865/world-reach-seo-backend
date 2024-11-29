@@ -109,6 +109,9 @@ export default class Website extends BaseModel {
   declare country: string
 
   @column()
+  declare screenshotUrl: string
+
+  @column()
   declare hide: boolean
 
   @column()
@@ -116,6 +119,9 @@ export default class Website extends BaseModel {
 
   @column()
   declare lastUpdated?: Date
+
+  @column()
+  declare screenshotDate?: Date
 
   @manyToMany(() => Category, {
     localKey: 'id',

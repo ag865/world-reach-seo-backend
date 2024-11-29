@@ -1,9 +1,7 @@
 import NotFoundException from '#exceptions/NotFoundException'
-import { UserServices } from '#services/index'
+import { S3Service, UserServices } from '#services/index'
 import { updateMemberValidator } from '#validators/MembersValidators'
-import { cuid } from '@adonisjs/core/helpers'
 import type { HttpContext } from '@adonisjs/core/http'
-import app from '@adonisjs/core/services/app'
 
 export default class ProfileController {
   async index({ auth, response }: HttpContext) {
@@ -28,9 +26,8 @@ export default class ProfileController {
     let data: any = requestData
 
     if (avatar) {
-      const fileName = `${cuid()}.${avatar.clientName}`
-      await avatar.move(app.makePath('uploads'), { name: fileName })
-      data = { ...data, avatar: fileName }
+      const publicUrl = await S3Service.uploadAvatar(avatar)
+      data = { ...data, avatar: publicUrl }
     }
 
     await UserServices.update(data, 'id', userId)

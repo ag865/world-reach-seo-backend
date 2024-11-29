@@ -1,8 +1,7 @@
 import SalesRepresentative from '#models/SalesRepresentative'
+import { S3Service } from '#services/index'
 import { SalesRepresentativeValidator } from '#validators/SalesRepresentativeValidator'
-import { cuid } from '@adonisjs/core/helpers'
 import type { HttpContext } from '@adonisjs/core/http'
-import app from '@adonisjs/core/services/app'
 
 export default class SalesRepresentativesController {
   async index({ response }: HttpContext) {
@@ -18,9 +17,8 @@ export default class SalesRepresentativesController {
     let data: any = requestData
 
     if (avatar) {
-      const fileName = `${cuid()}.${avatar.clientName}`
-      await avatar.move(app.makePath('uploads'), { name: fileName })
-      data = { ...data, avatar: fileName }
+      const publicUrl = await S3Service.uploadAvatar(avatar)
+      data = { ...data, avatar: publicUrl }
     }
 
     if (salesRep) {

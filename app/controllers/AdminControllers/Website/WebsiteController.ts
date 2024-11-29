@@ -1,14 +1,12 @@
 import NotFoundException from '#exceptions/NotFoundException'
 import Website from '#models/Website'
+import { S3Service } from '#services/index'
 import { getWebsites } from '#services/WebsiteServices'
 import { createWebsiteValidator, updateWebsiteValidator } from '#validators/WebsiteValidator'
 import type { HttpContext } from '@adonisjs/core/http'
 import { DateTime } from 'luxon'
 
 export default class WebsitesController {
-  /**
-   * Display a list of resource
-   */
   async index({ request, response }: HttpContext) {
     const params = request.qs()
 
@@ -20,11 +18,25 @@ export default class WebsitesController {
   async store({ request, response }: HttpContext) {
     const { categories, ...data } = await request.validateUsing(createWebsiteValidator)
 
-    const website = await Website.create({
+    const screenshotUrl = await S3Service.uploadWebsiteScreenshot(data.domain)
+
+    let dataToSave: any = {
       ...data,
       domain: data.domain.toLowerCase(),
       uploadDate: data.uploadDate ? new Date(data.uploadDate) : undefined,
       lastUpdated: data.lastUpdated ? new Date(data.lastUpdated) : undefined,
+    }
+
+    if (screenshotUrl) {
+      dataToSave = {
+        ...dataToSave,
+        screenshotDate: new Date(),
+        screenshotUrl,
+      }
+    }
+
+    const website = await Website.create({
+      ...dataToSave,
     })
 
     if (categories) await website.related('categories').attach(categories)
