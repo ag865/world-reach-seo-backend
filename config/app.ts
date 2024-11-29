@@ -41,6 +41,6 @@ export const http = defineConfig({
   },
 })
 
-Schedule.scheduleJob('* * * * *', async () => {
+Schedule.scheduleJob('* 12 * * *', async () => {
   await WebsiteScreenshotJob()
 })

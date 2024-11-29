@@ -74,4 +74,8 @@ export default await Env.create(new URL('../', import.meta.url), {
   S3_BUCKET: Env.schema.string(),
 
   FLASH_API_ACCESS_KEY: Env.schema.string(),
+
+  QUEUE_REDIS_HOST: Env.schema.string(),
+  QUEUE_REDIS_PORT: Env.schema.number(),
+  QUEUE_REDIS_PASSWORD: Env.schema.string(),
 })

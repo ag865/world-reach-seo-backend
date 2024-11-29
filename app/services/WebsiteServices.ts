@@ -511,7 +511,17 @@ const getWebsitesForScreenshots = async () => {
     .select('id', 'domain', 'screenshot_date')
     .whereNull('screenshot_date')
     .orWhere('screenshot_date', '<', moment().subtract(1, 'years').toDate())
-    .limit(5)
 }
 
-export { addWebsites, getCountWebsites, getWebsite, getWebsites, getWebsitesForScreenshots }
+const updateWebsite = async (id: number, screenshotUrl: string) => {
+  await Website.query().where('id', id).update({ screenshotUrl })
+}
+
+export {
+  addWebsites,
+  getCountWebsites,
+  getWebsite,
+  getWebsites,
+  getWebsitesForScreenshots,
+  updateWebsite,
+}
