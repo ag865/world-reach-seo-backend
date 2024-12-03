@@ -509,12 +509,14 @@ const getWebsite = async (key: string, value: any) => {
 const getWebsitesForScreenshots = async () => {
   return await Website.query()
     .select('id', 'domain', 'screenshot_date')
-    .whereNull('screenshot_date')
+    .whereNull('screenshot_url')
+    .orWhere('screenshot_url', '=', '')
+    .orWhereNull('screenshot_date')
     .orWhere('screenshot_date', '<', moment().subtract(1, 'years').toDate())
 }
 
 const updateWebsite = async (id: number, screenshotUrl: string) => {
-  await Website.query().where('id', id).update({ screenshotUrl })
+  await Website.query().where('id', id).update({ screenshotUrl, screenshotDate: new Date() })
 }
 
 export {

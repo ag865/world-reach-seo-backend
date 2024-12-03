@@ -1,4 +1,5 @@
 import env from '#start/env'
+import { inProduction } from './helpers.js'
 
 export const SCREENSHOT_URL = `https://api.apiflash.com/v1/urltoimage
 ?access_key=${env.get('FLASH_API_ACCESS_KEY')}
@@ -10,6 +11,5 @@ export const SCREENSHOT_URL = `https://api.apiflash.com/v1/urltoimage
 export const redisConnection = {
   host: env.get('QUEUE_REDIS_HOST'),
   port: env.get('QUEUE_REDIS_PORT'),
-  // password: env.get('QUEUE_REDIS_PASSWORD'),
-  password: '',
+  password: inProduction() ? '' : env.get('QUEUE_REDIS_PASSWORD'),
 }
