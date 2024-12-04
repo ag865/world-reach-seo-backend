@@ -3,6 +3,7 @@ import Website from '#models/Website'
 import string from '@adonisjs/core/helpers/string'
 import moment from 'moment'
 import { getUniqueByKey } from '../../utils/helpers.js'
+import { StatsServices } from './index.js'
 
 const addWebsites = async (data: any[]) => {
   const websites: any[] = []
@@ -506,6 +507,10 @@ const getWebsite = async (key: string, value: any) => {
   return await Website.query().where(key, value).first()
 }
 
+const getAllWebsites = async () => {
+  return await Website.query().orderBy('id', 'asc').limit(1)
+}
+
 const getWebsitesForScreenshots = async () => {
   return await Website.query()
     .select('id', 'domain', 'screenshot_date')
@@ -519,11 +524,70 @@ const updateWebsite = async (id: number, screenshotUrl: string) => {
   await Website.query().where('id', id).update({ screenshotUrl, screenshotDate: new Date() })
 }
 
+const updateWebsiteStats = async (wesbite: Website) => {
+  try {
+    const { id, domain, spamScore, mozDA, semrushAS } = wesbite
+    let dataToUpdate: any = {}
+
+    const semrushASResponse = await StatsServices.getSemrushStats(domain)
+    if (semrushASResponse) {
+      let smerushTrend = semrushAS ? 'NONE' : 'UP'
+
+      if (semrushAS) {
+        if (semrushAS > semrushASResponse) {
+          smerushTrend = 'DOWN'
+        } else if (semrushAS < semrushASResponse) {
+          smerushTrend = 'UP'
+        }
+      }
+
+      dataToUpdate = {
+        semrushAS: semrushASResponse,
+        smerushTrend,
+      }
+    }
+
+    const mozResponse = await StatsServices.getMozStats(domain)
+    if (mozResponse) {
+      let mozDATrend = 'NONE'
+      let mozSpamScoreTrend = 'NONE'
+
+      if (mozResponse.spamScore > spamScore) {
+        mozSpamScoreTrend = 'UP'
+      } else if (mozResponse.spamScore < spamScore) {
+        mozSpamScoreTrend = 'DOWN'
+      }
+
+      if (mozResponse.mozDA > mozDA) {
+        mozDATrend = 'UP'
+      } else if (mozResponse.mozDA < mozDA) {
+        mozDATrend = 'DOWN'
+      }
+
+      dataToUpdate = { ...dataToUpdate, ...mozResponse, mozDATrend, mozSpamScoreTrend }
+    }
+
+    dataToUpdate = { ...dataToUpdate, lastUpdated: new Date() }
+
+    console.log('DATA TO UPDATE', dataToUpdate)
+
+    // await Website.query()
+    //   .where('id', id)
+    //   .update({ ...dataToUpdate })
+
+    console.log('UPDATED WEBSITE', { id, domain })
+  } catch (e) {
+    console.log(e)
+  }
+}
+
 export {
   addWebsites,
+  getAllWebsites,
   getCountWebsites,
   getWebsite,
   getWebsites,
   getWebsitesForScreenshots,
   updateWebsite,
+  updateWebsiteStats,
 }

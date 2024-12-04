@@ -80,4 +80,7 @@ export default await Env.create(new URL('../', import.meta.url), {
   QUEUE_REDIS_PASSWORD: Env.schema.string(),
 
   APP_MODE: Env.schema.string(),
+
+  SEMRUSH_API_KEY: Env.schema.string(),
+  MOZ_API_KEY: Env.schema.string(),
 })

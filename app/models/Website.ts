@@ -46,6 +46,9 @@ export default class Website extends BaseModel {
   declare mozDA: number
 
   @column()
+  declare semrushAS: number
+
+  @column()
   declare aHrefsDR: number
 
   @column()

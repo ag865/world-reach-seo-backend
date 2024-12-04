@@ -4,6 +4,7 @@ import { defineConfig } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
 import Schedule from 'node-schedule'
 import WebsiteScreenshotJob from '../app/jobs/WebsiteScreenshotJob.js'
+import WebsiteStatsJob from '../app/jobs/WebsiteStatsJob.js'
 
 /**
  * The app key is used for encrypting cookies, generating signed URLs,
@@ -41,6 +42,14 @@ export const http = defineConfig({
   },
 })
 
-Schedule.scheduleJob('15 12 * * *', async () => {
+Schedule.scheduleJob('15 00 * * *', async () => {
   await WebsiteScreenshotJob()
+})
+
+// Schedule.scheduleJob('45 00 */15,30 * *', async () => {
+//   await WebsiteStatsJob()
+// })
+
+Schedule.scheduleJob('*/1 * * * *', async () => {
+  await WebsiteStatsJob()
 })
