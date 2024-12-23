@@ -1,8 +1,10 @@
 import Category from '#models/Category'
 import Website from '#models/Website'
+import WebsiteOrganicTraffic from '#models/WebsiteOrganicTraffic'
 import string from '@adonisjs/core/helpers/string'
 import moment from 'moment'
 import { getUniqueByKey } from '../../utils/helpers.js'
+import { getCountryISOCode } from '../../utils/isoCountryCodes.js'
 import { StatsServices } from './index.js'
 
 const addWebsites = async (data: any[]) => {
@@ -508,7 +510,7 @@ const getWebsite = async (key: string, value: any) => {
 }
 
 const getAllWebsites = async () => {
-  return await Website.query().orderBy('id', 'asc').limit(1)
+  return await Website.query().orderBy('id', 'asc')
 }
 
 const getWebsitesForScreenshots = async () => {
@@ -520,62 +522,85 @@ const getWebsitesForScreenshots = async () => {
     .orWhere('screenshot_date', '<', moment().subtract(1, 'years').toDate())
 }
 
+const getWebsiteOrganicTraffic = async (websiteId: number) => {
+  return await WebsiteOrganicTraffic.query().where('website_id', websiteId)
+}
+
 const updateWebsite = async (id: number, screenshotUrl: string) => {
   await Website.query().where('id', id).update({ screenshotUrl, screenshotDate: new Date() })
 }
 
-const updateWebsiteStats = async (wesbite: Website) => {
+const updateWebsiteStats = async (website: Website) => {
   try {
-    const { id, domain, spamScore, mozDA, semrushAS } = wesbite
+    const { id, domain, country } = website
+
+    const countryCode = getCountryISOCode(country)
+
     let dataToUpdate: any = {}
 
-    const semrushASResponse = await StatsServices.getSemrushStats(domain)
+    const semrushASResponse = await StatsServices.getSemrushStats(website)
     if (semrushASResponse) {
-      let smerushTrend = semrushAS ? 'NONE' : 'UP'
-
-      if (semrushAS) {
-        if (semrushAS > semrushASResponse) {
-          smerushTrend = 'DOWN'
-        } else if (semrushAS < semrushASResponse) {
-          smerushTrend = 'UP'
-        }
-      }
-
-      dataToUpdate = {
-        semrushAS: semrushASResponse,
-        smerushTrend,
-      }
+      dataToUpdate = { ...semrushASResponse }
+    }
+    const mozResponse = await StatsServices.getMozStats(website)
+    if (mozResponse) {
+      dataToUpdate = { ...dataToUpdate, ...mozResponse }
     }
 
-    const mozResponse = await StatsServices.getMozStats(domain)
-    if (mozResponse) {
-      let mozDATrend = 'NONE'
-      let mozSpamScoreTrend = 'NONE'
-
-      if (mozResponse.spamScore > spamScore) {
-        mozSpamScoreTrend = 'UP'
-      } else if (mozResponse.spamScore < spamScore) {
-        mozSpamScoreTrend = 'DOWN'
-      }
-
-      if (mozResponse.mozDA > mozDA) {
-        mozDATrend = 'UP'
-      } else if (mozResponse.mozDA < mozDA) {
-        mozDATrend = 'DOWN'
-      }
-
-      dataToUpdate = { ...dataToUpdate, ...mozResponse, mozDATrend, mozSpamScoreTrend }
+    const ahrefStats = await StatsServices.getAhrefsStats(website, countryCode ?? '')
+    if (ahrefStats) {
+      dataToUpdate = { ...dataToUpdate, ...ahrefStats }
     }
 
     dataToUpdate = { ...dataToUpdate, lastUpdated: new Date() }
 
     console.log('DATA TO UPDATE', dataToUpdate)
 
-    // await Website.query()
-    //   .where('id', id)
-    //   .update({ ...dataToUpdate })
+    await Website.query()
+      .where('id', id)
+      .update({ ...dataToUpdate })
 
     console.log('UPDATED WEBSITE', { id, domain })
+
+    const websiteId = website.id
+
+    const websiteOrganicTraffic = await WebsiteOrganicTraffic.query()
+      .where('website_id', websiteId)
+      .limit(1)
+
+    console.log('OT HISTORY', websiteOrganicTraffic.length)
+
+    if (!websiteOrganicTraffic.length) {
+      if (countryCode) {
+        const websiteOrganicTrafficHistory = await StatsServices.getAhrefsOrganicTrafficHistory(
+          website.domain,
+          countryCode
+        )
+
+        if (websiteOrganicTrafficHistory && websiteOrganicTrafficHistory.length) {
+          const dataToInsert = websiteOrganicTrafficHistory.map((item) => ({
+            websiteId,
+            organicTraffic: item.organicTraffic,
+            date: new Date(item.date),
+          }))
+
+          console.log('DATA TO INSERT', dataToInsert.length)
+          console.log('FIRST RECORD', dataToInsert[0])
+
+          await WebsiteOrganicTraffic.createMany(dataToInsert)
+        }
+      }
+    } else {
+      console.log('INSERTING CURRENT STAT')
+      if (ahrefStats.organicTraffic) {
+        console.log('CURRENT ORGANIC TRAFFIC STAT')
+        await WebsiteOrganicTraffic.create({
+          websiteId,
+          date: new Date(),
+          organicTraffic: ahrefStats.organicTraffic,
+        })
+      }
+    }
   } catch (e) {
     console.log(e)
   }
@@ -586,6 +611,7 @@ export {
   getAllWebsites,
   getCountWebsites,
   getWebsite,
+  getWebsiteOrganicTraffic,
   getWebsites,
   getWebsitesForScreenshots,
   updateWebsite,

@@ -1,67 +1,55 @@
-import axios from 'axios'
-import {
-  MOZ_API_KEY,
-  MOZ_API_URL,
-  SEMRUSH_API_KEY,
-  SEMRUSH_API_URL,
-} from '../../utils/constants.js'
+import Website from '#models/Website'
+import moment from 'moment'
+import { AHREFS_API_TOKEN } from '../../utils/constants.js'
+import { getStatTrend } from '../../utils/helpers.js'
+import { StatsAPIServices } from './index.js'
 
-const getSemrushStats = async (domain: string) => {
+const getSemrushStats = async (website: Website) => {
   try {
-    const response = await axios.get(SEMRUSH_API_URL, {
-      params: {
-        type: 'backlinks_overview',
-        key: SEMRUSH_API_KEY,
-        target: domain,
-        target_type: 'root_domain',
-        export_columns: 'ascore',
-      },
-      responseType: 'json',
-    })
+    const { domain, semrushAs } = website
 
-    return parseInt(response.data.split('\n')[1])
+    const semrushASResponse = await StatsAPIServices.getSemrushAPIResponse(domain)
+
+    let dataToUpdate: any = {}
+
+    if (semrushASResponse) {
+      let semrushTrend = getStatTrend(semrushAs, semrushASResponse)
+
+      dataToUpdate = {
+        semrushAs: semrushASResponse,
+        semrushTrend,
+      }
+    }
+
+    return dataToUpdate
   } catch (e) {
     console.log('ERROR', e)
     return undefined
   }
 }
 
-const getMozStats = async (domain: string) => {
+const getMozStats = async (website: Website) => {
   try {
-    const response = await axios.post(
-      MOZ_API_URL,
-      {
-        jsonrpc: '2.0',
-        id: '7d399660-5225-4763-a6d1-f2101e42dd48',
-        method: 'data.site.metrics.fetch',
-        params: {
-          data: {
-            site_query: {
-              query: domain,
-              scope: 'domain',
-            },
-          },
-        },
-      },
-      {
-        headers: {
-          'x-moz-token': MOZ_API_KEY,
-          'Content-Type': 'application/json',
-        },
-      }
-    )
+    const { domain, spamScore, mozDA } = website
+
+    const mozResponse = await StatsAPIServices.getMozAPIResponse(domain)
 
     let dataToReturn: any = {}
 
-    if (response.data.result.site_metrics.spam_score) {
-      dataToReturn = { spamScore: response.data.result.site_metrics.spam_score }
+    if (mozResponse.spamScore) {
+      const spamScoreResponse = mozResponse.spamScore
+
+      const mozSpamScoreTrend = getStatTrend(spamScore, mozResponse.spamScore)
+
+      dataToReturn = { spamScore: spamScoreResponse, mozSpamScoreTrend }
     }
 
-    if (response.data.result.site_metrics.domain_authority) {
-      dataToReturn = {
-        ...dataToReturn,
-        mozDA: response.data.result.site_metrics.domain_authority,
-      }
+    if (mozResponse.mozDA) {
+      const mozDAResponse = mozResponse.mozDA
+
+      const mozDaTrend = getStatTrend(mozDA, mozResponse.mozDA)
+
+      dataToReturn = { ...dataToReturn, mozDA: mozDAResponse, mozDaTrend }
     }
 
     return dataToReturn
@@ -71,4 +59,80 @@ const getMozStats = async (domain: string) => {
   }
 }
 
-export { getMozStats, getSemrushStats }
+const getAhrefsStats = async (website: Website, country: string) => {
+  const { aHrefsDR } = website
+
+  const date = moment().format('YYYY-MM-DD')
+
+  const headers = {
+    Accept: 'application/json',
+    Authorization: `Bearer ${AHREFS_API_TOKEN}`,
+  }
+
+  const params = {
+    target: website.domain,
+    date,
+    output: 'json',
+  }
+
+  let dataToReturn: any = {}
+
+  const aHrefsDRResponse = await StatsAPIServices.getAhrefsDomainRatingsAPIResponse(params, headers)
+  if (aHrefsDRResponse) {
+    const ahrefsTrend = getStatTrend(aHrefsDR, aHrefsDRResponse)
+    dataToReturn = { aHrefsDR: aHrefsDRResponse, ahrefsTrend }
+  }
+
+  const referringDomain = await StatsAPIServices.getAhrefsReferringDomainsAPIResponse(
+    params,
+    headers
+  )
+  if (referringDomain) {
+    dataToReturn = { ...dataToReturn, referringDomain }
+  }
+
+  const linkedRootDomains = await StatsAPIServices.getAhrefsLinkedRootDomainsAPIResponse(
+    params,
+    headers
+  )
+  if (referringDomain) {
+    dataToReturn = { ...dataToReturn, linkedRootDomains }
+  }
+
+  const organicTraffic = await StatsAPIServices.getAhrefsOrganicTrafficAPIResponse(
+    params,
+    headers,
+    country
+  )
+  if (organicTraffic) {
+    dataToReturn = { ...dataToReturn, ...organicTraffic }
+  }
+
+  return dataToReturn
+}
+
+const getAhrefsOrganicTrafficHistory = async (target: string, country: string) => {
+  const startDate = moment().subtract(2, 'years').format('YYYY-MM-DD')
+
+  const headers = {
+    Accept: 'application/json',
+    Authorization: `Bearer ${AHREFS_API_TOKEN}`,
+  }
+
+  const params = {
+    target: target,
+    date_from: startDate,
+    history_grouping: 'weekly',
+    output: 'json',
+  }
+
+  const history = await StatsAPIServices.getAhrefsOrganicTrafficHistoryAPIResponse(params, headers)
+  if (history && history.length) {
+    return history.map((entry: any) => ({
+      date: entry.date as string,
+      organicTraffic: entry.org_traffic as number,
+    }))
+  }
+}
+
+export { getAhrefsOrganicTrafficHistory, getAhrefsStats, getMozStats, getSemrushStats }

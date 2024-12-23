@@ -34,6 +34,7 @@ router
       .group(() => {
         router.get('/', [WebsitesController, 'get'])
         router.get('/count', [WebsitesController, 'getCount'])
+        router.get('/organic-traffic/:id', [WebsitesController, 'getOrganicTraffic'])
       })
       .prefix('website')
 

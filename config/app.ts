@@ -46,10 +46,6 @@ Schedule.scheduleJob('15 00 * * *', async () => {
   await WebsiteScreenshotJob()
 })
 
-// Schedule.scheduleJob('45 00 */15,30 * *', async () => {
-//   await WebsiteStatsJob()
-// })
-
-Schedule.scheduleJob('*/1 * * * *', async () => {
+Schedule.scheduleJob('45 00 */15,30 * *', async () => {
   await WebsiteStatsJob()
 })

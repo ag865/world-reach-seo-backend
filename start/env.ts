@@ -83,4 +83,5 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   SEMRUSH_API_KEY: Env.schema.string(),
   MOZ_API_KEY: Env.schema.string(),
+  AHREFS_API_TOKEN: Env.schema.string(),
 })

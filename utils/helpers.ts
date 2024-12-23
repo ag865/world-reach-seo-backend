@@ -25,4 +25,26 @@ const inProduction = () => {
   return env.get('APP_MODE') === 'production'
 }
 
-export { generateRandomOrderNumber, getUniqueByKey, inProduction }
+const getStatTrend = (prevValue: number, currenValue: number) => {
+  if (!prevValue && currenValue) {
+    return 'UP'
+  }
+
+  if (prevValue && !currenValue) {
+    return 'DOWN'
+  }
+
+  if (!prevValue && !currenValue) {
+    return 'NONE'
+  }
+
+  if (prevValue > currenValue) {
+    return 'DOWN'
+  } else if (prevValue < currenValue) {
+    return 'UP'
+  } else {
+    return 'NONE'
+  }
+}
+
+export { generateRandomOrderNumber, getStatTrend, getUniqueByKey, inProduction }

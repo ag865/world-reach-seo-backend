@@ -46,10 +46,28 @@ export default class Website extends BaseModel {
   declare mozDA: number
 
   @column()
-  declare semrushAS: number
+  declare mozSpamScoreTrend: string
+
+  @column()
+  declare mozDaTrend: string
+
+  @column()
+  declare semrushAs: number
+
+  @column()
+  declare semrushTrend: string
+
+  @column()
+  declare ahrefsTrend: string
 
   @column()
   declare aHrefsDR: number
+
+  @column()
+  declare referringDomain: number
+
+  @column()
+  declare linkedRootDomains: number
 
   @column()
   declare organicTraffic: number
