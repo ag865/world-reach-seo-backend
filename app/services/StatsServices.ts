@@ -59,7 +59,7 @@ const getMozStats = async (website: Website) => {
   }
 }
 
-const getAhrefsStats = async (website: Website, country: string) => {
+const getAhrefsStats = async (website: Website) => {
   const { aHrefsDR } = website
 
   const date = moment().format('YYYY-MM-DD')
@@ -99,11 +99,7 @@ const getAhrefsStats = async (website: Website, country: string) => {
     dataToReturn = { ...dataToReturn, linkedRootDomains }
   }
 
-  const organicTraffic = await StatsAPIServices.getAhrefsOrganicTrafficAPIResponse(
-    params,
-    headers,
-    country
-  )
+  const organicTraffic = await StatsAPIServices.getAhrefsOrganicTrafficAPIResponse(params, headers)
   if (organicTraffic) {
     dataToReturn = { ...dataToReturn, ...organicTraffic }
   }
@@ -111,7 +107,7 @@ const getAhrefsStats = async (website: Website, country: string) => {
   return dataToReturn
 }
 
-const getAhrefsOrganicTrafficHistory = async (target: string, country: string) => {
+const getAhrefsOrganicTrafficHistory = async (target: string) => {
   const startDate = moment().subtract(2, 'years').format('YYYY-MM-DD')
 
   const headers = {

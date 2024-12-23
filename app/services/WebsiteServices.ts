@@ -547,20 +547,16 @@ const updateWebsiteStats = async (website: Website) => {
       dataToUpdate = { ...dataToUpdate, ...mozResponse }
     }
 
-    const ahrefStats = await StatsServices.getAhrefsStats(website, countryCode ?? '')
+    const ahrefStats = await StatsServices.getAhrefsStats(website)
     if (ahrefStats) {
       dataToUpdate = { ...dataToUpdate, ...ahrefStats }
     }
 
     dataToUpdate = { ...dataToUpdate, lastUpdated: new Date() }
 
-    console.log('DATA TO UPDATE', dataToUpdate)
-
     await Website.query()
       .where('id', id)
       .update({ ...dataToUpdate })
-
-    console.log('UPDATED WEBSITE', { id, domain })
 
     const websiteId = website.id
 
@@ -568,13 +564,10 @@ const updateWebsiteStats = async (website: Website) => {
       .where('website_id', websiteId)
       .limit(1)
 
-    console.log('OT HISTORY', websiteOrganicTraffic.length)
-
     if (!websiteOrganicTraffic.length) {
       if (countryCode) {
         const websiteOrganicTrafficHistory = await StatsServices.getAhrefsOrganicTrafficHistory(
-          website.domain,
-          countryCode
+          website.domain
         )
 
         if (websiteOrganicTrafficHistory && websiteOrganicTrafficHistory.length) {
@@ -584,16 +577,11 @@ const updateWebsiteStats = async (website: Website) => {
             date: new Date(item.date),
           }))
 
-          console.log('DATA TO INSERT', dataToInsert.length)
-          console.log('FIRST RECORD', dataToInsert[0])
-
           await WebsiteOrganicTraffic.createMany(dataToInsert)
         }
       }
     } else {
-      console.log('INSERTING CURRENT STAT')
       if (ahrefStats.organicTraffic) {
-        console.log('CURRENT ORGANIC TRAFFIC STAT')
         await WebsiteOrganicTraffic.create({
           websiteId,
           date: new Date(),

@@ -82,7 +82,6 @@ const getAhrefsDomainRatingsAPIResponse = async (params: any, headers: any) => {
       headers,
       params,
     })
-    // console.log('AHREFS DR', response)
     return response.data.domain_rating.domain_rating
   } catch (e) {
     console.log('ERROR', e)
@@ -122,7 +121,7 @@ const getAhrefsLinkedRootDomainsAPIResponse = async (params: any, headers: any) 
   }
 }
 
-const getAhrefsOrganicTrafficAPIResponse = async (params: any, headers: any, country: string) => {
+const getAhrefsOrganicTrafficAPIResponse = async (params: any, headers: any) => {
   try {
     const API_URL = `${AHREFS_API_BASE_URL}/metrics-by-country`
 
